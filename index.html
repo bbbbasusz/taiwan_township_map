@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>대만 향진시 백지도 & 지도 편집기 (Taiwan Township Map Editor)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- D3.js v7 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <!-- TopoJSON Client -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+        }
+        .map-container {
+            background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        .dark .map-container {
+            background-image: radial-gradient(#374151 1px, transparent 1px);
+        }
+        .township-path {
+            transition: fill 0.15s ease, stroke-width 0.15s ease;
+            cursor: pointer;
+        }
+        .township-path:hover {
+            fill-opacity: 0.85;
+            stroke-width: 1.5px;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased h-screen flex flex-col overflow-hidden">
+
+    <!-- Header -->
+    <header class="bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between z-10 shadow-sm">
+        <div class="flex items-center space-x-3">
+            <div class="p-2 bg-indigo-600 text-white rounded-lg shadow-md">
+                <i data-lucide="map"></i>
+            </div>
+            <div>
+                <h1 class="text-lg font-bold text-slate-900 leading-tight">대만 향진시 백지도 & 지도 편집기</h1>
+                <p class="text-xs text-slate-500">Taiwan Townships Vector Map & Interactive Styling Editor</p>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-3">
+            <button id="btnResetView" class="px-3 py-1.5 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-md transition flex items-center gap-1.5">
+                <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> 위치 초기화
+            </button>
+            <button id="btnResetColors" class="px-3 py-1.5 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-md transition flex items-center gap-1.5">
+                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> 색상 리셋
+            </button>
+            <div class="h-4 w-[1px] bg-slate-300"></div>
+            <button id="btnExportSVG" class="px-3.5 py-1.5 text-xs font-medium text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-md transition flex items-center gap-1.5">
+                <i data-lucide="download" class="w-3.5 h-3.5"></i> SVG 내보내기
+            </button>
+            <button id="btnExportPNG" class="px-3.5 py-1.5 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow-sm transition flex items-center gap-1.5">
+                <i data-lucide="image" class="w-3.5 h-3.5"></i> PNG 이미지 저장
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <div class="flex-1 flex overflow-hidden">
+        
+        <!-- Left Sidebar: Tools & Settings -->
+        <aside class="w-80 bg-white border-r border-slate-200 flex flex-col z-10 shadow-sm">
+            <!-- Tabs Header -->
+            <div class="flex border-b border-slate-200 bg-slate-50/50">
+                <button id="tabStyleBtn" class="flex-1 py-2.5 text-xs font-semibold text-indigo-600 border-b-2 border-indigo-600 transition flex items-center justify-center gap-1.5">
+                    <i data-lucide="palette" class="w-3.5 h-3.5"></i> 개별 스타일
+                </button>
+                <button id="tabBatchBtn" class="flex-1 py-2.5 text-xs font-semibold text-slate-500 hover:text-slate-700 transition flex items-center justify-center gap-1.5">
+                    <i data-lucide="file-text" class="w-3.5 h-3.5"></i> 일괄 목록 입력
+                </button>
+                <button id="tabDataBtn" class="flex-1 py-2.5 text-xs font-semibold text-slate-500 hover:text-slate-700 transition flex items-center justify-center gap-1.5">
+                    <i data-lucide="layers" class="w-3.5 h-3.5"></i> 목록 & 구역
+                </button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-4 space-y-6">
+                <!-- Tab Content 1: Style & Fill -->
+                <div id="tabStyleContent" class="space-y-6">
+                    <!-- Current Selection Info -->
+                    <div class="p-3.5 bg-indigo-50/60 border border-indigo-100 rounded-lg">
+                        <span class="text-[11px] font-semibold uppercase text-indigo-600 tracking-wider">선택된 행정구역</span>
+                        <div id="selectedRegionName" class="text-base font-bold text-slate-900 mt-0.5">지도를 클릭하세요</div>
+                        <div id="selectedRegionDetail" class="text-xs text-slate-500 mb-2">카운티 / 향진시 정보 표시</div>
+                        
+                        <!-- Custom Label Input for Selected Region -->
+                        <div class="mt-2 pt-2 border-t border-indigo-100/60">
+                            <label class="block text-[11px] font-semibold text-slate-600 mb-1">지도 표시 이름 변경 (커스텀 라벨)</label>
+                            <input type="text" id="customLabelInput" placeholder="예: 시니구 / Xinyi" class="w-full px-2.5 py-1 text-xs border border-indigo-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                        </div>
+                    </div>
+
+                    <!-- Quick Palette -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-2">팔레트 색상 지정</label>
+                        <div class="grid grid-cols-6 gap-2" id="colorPalette">
+                            <!-- JS Inject palette buttons -->
+                        </div>
+                    </div>
+
+                    <!-- Custom Color Picker -->
+                    <div class="flex items-center justify-between bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                        <label class="text-xs font-medium text-slate-700">사용자 정의 색상</label>
+                        <div class="flex items-center gap-2">
+                            <input type="color" id="customColorPicker" value="#3b82f6" class="w-7 h-7 rounded border cursor-pointer">
+                            <button id="btnApplyCustomColor" class="px-2.5 py-1 text-xs bg-slate-800 text-white rounded hover:bg-slate-700 transition">적용</button>
+                        </div>
+                    </div>
+
+                    <!-- Used / History Colors Palette (Positioned right below Custom Color Picker) -->
+                    <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-lg space-y-1.5">
+                        <div class="flex justify-between items-center">
+                            <label class="block text-xs font-semibold text-slate-700">사용한 / 추천 색상 선택</label>
+                            <span class="text-[10px] text-slate-400">클릭하여 선택</span>
+                        </div>
+                        <div class="flex flex-wrap gap-1.5 min-h-[32px]" id="savedColorsPalette">
+                            <!-- JS Inject saved colors -->
+                        </div>
+                    </div>
+
+                    <!-- Pattern Selection Controls -->
+                    <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 space-y-2">
+                        <label class="block text-xs font-semibold text-slate-700">패턴 & 사선 설정</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="text-[10px] text-slate-500 block mb-0.5">패턴 종류</label>
+                                <select id="selectPatternType" class="w-full text-xs bg-white border border-slate-200 rounded px-2 py-1">
+                                    <option value="solid">단색 (Solid)</option>
+                                    <option value="stripe-right">오른쪽 사선 (/)</option>
+                                    <option value="stripe-left">왼쪽 사선 (\)</option>
+                                    <option value="grid">격자/십자 (+)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[10px] text-slate-500 block mb-0.5">사선(선) 색상</label>
+                                <input type="color" id="inputStripeColor" value="#000000" class="w-full h-7 rounded border border-slate-200 cursor-pointer">
+                            </div>
+                        </div>
+
+                        <!-- Added Pattern Gap (Spacing) Slider -->
+                        <div class="pt-1">
+                            <div class="flex justify-between text-[10px] text-slate-600 mb-0.5">
+                                <span>빗금(사선) 간격</span>
+                                <span id="valPatternGap">8px</span>
+                            </div>
+                            <input type="range" id="inputPatternGap" min="4" max="24" step="1" value="8" class="w-full accent-indigo-600">
+                        </div>
+                    </div>
+
+                    <!-- Batch Fill Operations -->
+                    <div class="space-y-2 pt-2 border-t border-slate-100">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">일괄 색상 적용</label>
+                        <button id="btnFillCounty" class="w-full py-2 px-3 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-md border border-slate-200 transition text-left flex items-center justify-between">
+                            <span>선택한 현/시 전체에 동일 색상</span>
+                            <i data-lucide="paint-bucket" class="w-3.5 h-3.5 text-slate-400"></i>
+                        </button>
+                    </div>
+
+                    <!-- Map Global Options -->
+                    <div class="space-y-4 pt-4 border-t border-slate-200">
+                        <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider">전체 스타일 & 라벨 설정</h3>
+                        
+                        <div>
+                            <div class="flex justify-between text-xs text-slate-600 mb-1">
+                                <span>향진 테두리 두께</span>
+                                <span id="valStrokeWidth">0.5px</span>
+                            </div>
+                            <input type="range" id="inputStrokeWidth" min="0.1" max="2" step="0.1" value="0.5" class="w-full accent-indigo-600">
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-xs text-slate-600 mb-1">
+                                <span>목록 외 테두리 색상 (옅은 회색)</span>
+                            </div>
+                            <input type="color" id="inputStrokeColor" value="#cbd5e1" class="w-full h-8 rounded border border-slate-200 cursor-pointer">
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-xs text-slate-600 mb-1">
+                                <span>바다 (배경) 색상 (옅은 파란색)</span>
+                            </div>
+                            <input type="color" id="inputBgColor" value="#e0f2fe" class="w-full h-8 rounded border border-slate-200 cursor-pointer">
+                        </div>
+
+                        <div class="space-y-2 pt-2 border-t border-slate-100">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-medium text-slate-700">입력된 지명만 라벨 표시</span>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="toggleLabels" class="sr-only peer" checked>
+                                    <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+                                </label>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs text-slate-600 mb-1">
+                                    <span>라벨 기준 크기</span>
+                                    <span id="valFontSize">3.5px</span>
+                                </div>
+                                <input type="range" id="inputFontSize" min="1" max="10" step="0.5" value="3.5" class="w-full accent-indigo-600">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Content 2: Batch List Import -->
+                <div id="tabBatchContent" class="space-y-4 hidden">
+                    <div class="bg-indigo-50/70 p-3 rounded-lg border border-indigo-100 text-xs text-indigo-900 space-y-1">
+                        <p class="font-bold flex items-center gap-1"><i data-lucide="layers" class="w-3.5 h-3.5"></i> 다중 지명 목록 및 색상 지정</p>
+                        <p class="text-indigo-700 leading-relaxed">여러 개의 지명 목록을 각각 다른 색상 및 다국어 라벨로 한꺼번에 등록할 수 있습니다.</p>
+                    </div>
+
+                    <!-- Multi-list items container -->
+                    <div id="batchListGroupContainer" class="space-y-3">
+                        <!-- Dynamic Batch Items will be rendered here -->
+                    </div>
+
+                    <button id="btnAddBatchGroup" class="w-full py-2 px-3 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 border border-dashed border-indigo-300 rounded-lg transition flex items-center justify-center gap-1.5">
+                        <i data-lucide="plus" class="w-3.5 h-3.5"></i> 새 목록 추가하기
+                    </button>
+
+                    <div class="flex gap-2 pt-2 border-t border-slate-200">
+                        <button id="btnApplyBatchList" class="flex-1 py-2 px-3 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition flex items-center justify-center gap-1.5">
+                            <i data-lucide="check" class="w-3.5 h-3.5"></i> 모든 목록 일괄 적용
+                        </button>
+                        <button id="btnClearBatchInput" class="py-2 px-3 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition">
+                            전체 리셋
+                        </button>
+                    </div>
+
+                    <div id="batchResultStatus" class="text-xs text-slate-500 font-medium hidden p-2.5 bg-slate-100 rounded-lg"></div>
+                </div>
+
+                <!-- Tab Content 3: Data Explorer & Search -->
+                <div id="tabDataContent" class="space-y-4 hidden">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">향진시 검색</label>
+                        <div class="relative">
+                            <input type="text" id="searchInput" placeholder="예: 타이베이, 信義區..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
+                        </div>
+                    </div>
+
+                    <!-- Region Tree List -->
+                    <div id="regionList" class="space-y-1 max-h-[420px] overflow-y-auto pr-1">
+                        <!-- JS rendered list of counties and townships -->
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Center: Interactive SVG Map Container -->
+        <main class="flex-1 relative map-container overflow-hidden flex items-center justify-center bg-slate-100" id="mapMain">
+            <!-- Loading Indicator -->
+            <div id="loadingSpinner" class="absolute z-20 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm inset-0">
+                <div class="w-10 h-10 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mb-3"></div>
+                <p class="text-sm font-semibold text-slate-700">대만 향진시 지도 데이터 로딩 중...</p>
+                <p class="text-xs text-slate-400 mt-1">외부 TopoJSON API 연결 중입니다.</p>
+            </div>
+
+            <!-- Floating Controls (Zoom) -->
+            <div class="absolute bottom-6 right-6 z-10 flex flex-col gap-2 bg-white p-1.5 rounded-lg shadow-md border border-slate-200">
+                <button id="btnZoomIn" class="p-2 text-slate-600 hover:bg-slate-100 rounded transition" title="확대">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                </button>
+                <button id="btnZoomOut" class="p-2 text-slate-600 hover:bg-slate-100 rounded transition" title="축소">
+                    <i data-lucide="minus" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <!-- Map Hover Tooltip -->
+            <div id="mapTooltip" class="absolute z-30 pointer-events-none hidden bg-slate-900/90 text-white text-xs px-2.5 py-1.5 rounded-md shadow-lg backdrop-blur-sm border border-slate-700 transition-opacity duration-150">
+                <div font-semibold id="tooltipTitle"></div>
+                <div class="text-[10px] text-slate-300 mt-0.5" id="tooltipSub"></div>
+            </div>
+
+            <!-- Legend/Title Overlay on Map -->
+            <div class="absolute top-6 left-6 z-10 bg-white/90 backdrop-blur-md p-4 rounded-xl shadow-sm border border-slate-200/80 max-w-xs">
+                <input type="text" id="mapTitleInput" value="대만 향진시 구분도" class="text-base font-bold text-slate-900 bg-transparent border-b border-transparent hover:border-slate-300 focus:border-indigo-500 focus:outline-none w-full">
+                <input type="text" id="mapSubtitleInput" value="Taiwan Township Administrative Map" class="text-xs text-slate-500 bg-transparent border-b border-transparent hover:border-slate-300 focus:border-indigo-500 focus:outline-none w-full mt-0.5">
+            </div>
+
+            <!-- Interactive SVG Map -->
+            <svg id="svgMap" class="w-full h-full cursor-grab active:cursor-grabbing"></svg>
+        </main>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Data Sources (Taiwan TopoJSON with Township Boundaries)
+        const GEO_DATA_URL = 'https://cdn.jsdelivr.net/npm/taiwan-atlas@1/towns-10t.json';
+
+        // Predefined Palette Colors
+        const PALETTE_COLORS = [
+            '#ffffff', '#f8fafc', '#cbd5e1', '#94a3b8', '#64748b', '#334155',
+            '#ef4444', '#f97316', '#f59e0b', '#10b981', '#06b6d4', '#3b82f6',
+            '#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#a855f7', '#14b8a6'
+        ];
+
+        // Saved / Used Colors Set
+        const savedColorsSet = new Set(['#3b82f6', '#ef4444', '#10b981']);
+
+        // State Management
+        let mapData = null;
+        let selectedFeature = null;
+        const colorMap = new Map(); // Store color/pattern string by ID
+        const customLabelMap = new Map(); // Store custom display names by ID
+        let currentFillColor = '#3b82f6';
+        let currentStripeColor = '#000000';
+        let currentPatternType = 'solid'; // 'solid', 'stripe-right', 'stripe-left', 'grid'
+        let currentPatternGap = 8; // Default pattern spacing in px
+        let showLabels = true;
+        let labelFontSize = 3.5;
+        let currentZoomScale = 1;
+
+        // Triple Click Tracker State
+        let clickTracker = {
+            lastId: null,
+            count: 0,
+            timer: null
+        };
+
+        // Batch Groups State
+        let batchGroups = [
+            {
+                id: 1,
+                name: '특별 관리 구역 (사선)',
+                color: '#ffffff',
+                stripeColor: '#ef4444',
+                pattern: 'stripe-right',
+                text: '信義區 = Xinyi Dist.\n大安區 = Daan Dist.\n板橋區 = 반차오구'
+            },
+            {
+                id: 2,
+                name: '개발 예정 구역',
+                color: '#3b82f6',
+                stripeColor: '#000000',
+                pattern: 'solid',
+                text: '宜蘭市 = 이란시\n羅東鎮 = 루오둥\n板橋區 = 반차오구 (중복)'
+            }
+        ];
+
+        // D3 Map References
+        let svg, g, zoom, path, projection;
+
+        // Initialization
+        window.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            initPaletteUI();
+            renderSavedColorsUI();
+            initTabs();
+            initD3Map();
+            loadTaiwanData();
+            renderBatchGroupsUI();
+            setupEventListeners();
+        });
+
+        // Add to Saved Colors
+        function saveColor(color) {
+            if (!color || color === 'transparent') return;
+            savedColorsSet.add(color.toLowerCase());
+            renderSavedColorsUI();
+        }
+
+        // Render Saved / History Colors
+        function renderSavedColorsUI() {
+            const container = document.getElementById('savedColorsPalette');
+            if (!container) return;
+            container.innerHTML = '';
+
+            savedColorsSet.forEach(color => {
+                const btn = document.createElement('button');
+                btn.className = 'w-6 h-6 rounded border border-slate-300 hover:scale-110 transition shadow-sm flex items-center justify-center';
+                btn.style.backgroundColor = color;
+                btn.title = color;
+                btn.addEventListener('click', () => {
+                    currentFillColor = color;
+                    document.getElementById('customColorPicker').value = color;
+                    applyColorToSelection();
+                });
+                container.appendChild(btn);
+            });
+        }
+
+        // Initialize Preset Color Palette Buttons
+        function initPaletteUI() {
+            const container = document.getElementById('colorPalette');
+            if (!container) return;
+            container.innerHTML = '';
+            PALETTE_COLORS.forEach(color => {
+                const btn = document.createElement('button');
+                btn.className = 'w-8 h-8 rounded-md border border-slate-300 hover:scale-110 transition shadow-sm flex items-center justify-center';
+                btn.style.backgroundColor = color;
+                btn.addEventListener('click', () => {
+                    currentFillColor = color;
+                    saveColor(color);
+                    applyColorToSelection();
+                });
+                container.appendChild(btn);
+            });
+        }
+
+        // Render Multi-list Batch Group Items with Reordering
+        function renderBatchGroupsUI() {
+            const container = document.getElementById('batchListGroupContainer');
+            if (!container) return;
+            container.innerHTML = '';
+
+            batchGroups.forEach((group, index) => {
+                const groupEl = document.createElement('div');
+                groupEl.className = 'p-3 bg-slate-50 border border-slate-200 rounded-lg space-y-2 relative';
+                groupEl.innerHTML = `
+                    <div class="flex items-center justify-between gap-1">
+                        <div class="flex items-center gap-1">
+                            <button data-index="${index}" class="btn-move-up p-1 text-slate-400 hover:text-slate-700 ${index === 0 ? 'opacity-30 cursor-not-allowed' : ''}" title="위로 이동">
+                                <i data-lucide="chevron-up" class="w-3.5 h-3.5"></i>
+                            </button>
+                            <button data-index="${index}" class="btn-move-down p-1 text-slate-400 hover:text-slate-700 ${index === batchGroups.length - 1 ? 'opacity-30 cursor-not-allowed' : ''}" title="아래로 이동">
+                                <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+                            </button>
+                            <input type="text" value="${group.name}" data-index="${index}" class="batch-group-name text-xs font-bold text-slate-800 bg-white border border-slate-200 rounded px-2 py-0.5 w-28 focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="목록 이름 (범례)">
+                        </div>
+                        ${batchGroups.length > 1 ? `<button data-index="${index}" class="btn-remove-batch text-slate-400 hover:text-red-500 transition p-1"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>` : ''}
+                    </div>
+
+                    <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+                        <div class="flex items-center gap-1">
+                            <label class="text-[10px] text-slate-500">배경:</label>
+                            <input type="color" value="${group.color}" data-index="${index}" class="batch-group-color w-5 h-5 rounded border border-slate-300 cursor-pointer" title="배경 색상">
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <label class="text-[10px] text-slate-500">사선선:</label>
+                            <input type="color" value="${group.stripeColor || '#000000'}" data-index="${index}" class="batch-group-stripe-color w-5 h-5 rounded border border-slate-300 cursor-pointer" title="사선/빗금 색상">
+                        </div>
+                        <select data-index="${index}" class="batch-group-pattern text-[11px] bg-white border border-slate-200 rounded px-1 py-0.5 text-slate-700">
+                            <option value="solid" ${group.pattern === 'solid' ? 'selected' : ''}>단색</option>
+                            <option value="stripe-right" ${group.pattern === 'stripe-right' ? 'selected' : ''}>사선(/)</option>
+                            <option value="stripe-left" ${group.pattern === 'stripe-left' ? 'selected' : ''}>사선(\)</option>
+                            <option value="grid" ${group.pattern === 'grid' ? 'selected' : ''}>격자(+)</option>
+                        </select>
+                    </div>
+
+                    <textarea data-index="${index}" rows="2" placeholder="지명 또는 지명 = 새 이름" class="batch-group-text w-full p-2 text-xs font-mono border border-slate-200 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white">${group.text}</textarea>
+                `;
+                container.appendChild(groupEl);
+            });
+
+            // Event bindings for dynamically created controls
+            container.querySelectorAll('.batch-group-name').forEach(input => {
+                input.addEventListener('input', (e) => {
+                    const idx = parseInt(e.target.dataset.index);
+                    batchGroups[idx].name = e.target.value;
+                });
+            });
+
+            container.querySelectorAll('.batch-group-color').forEach(input => {
+                input.addEventListener('change', (e) => {
+                    const idx = parseInt(e.target.dataset.index);
+                    batchGroups[idx].color = e.target.value;
+                    saveColor(e.target.value);
+                });
+            });
+
+            container.querySelectorAll('.batch-group-stripe-color').forEach(input => {
+                input.addEventListener('change', (e) => {
+                    const idx = parseInt(e.target.dataset.index);
+                    batchGroups[idx].stripeColor = e.target.value;
+                    saveColor(e.target.value);
+                });
+            });
+
+            container.querySelectorAll('.batch-group-pattern').forEach(select => {
+                select.addEventListener('change', (e) => {
+                    const idx = parseInt(e.target.dataset.index);
+                    batchGroups[idx].pattern = e.target.value;
+                });
+            });
+
+            container.querySelectorAll('.batch-group-text').forEach(textarea => {
+                textarea.addEventListener('input', (e) => {
+                    const idx = parseInt(e.target.dataset.index);
+                    batchGroups[idx].text = e.target.value;
+                });
+            });
+
+            container.querySelectorAll('.btn-remove-batch').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const idx = parseInt(e.currentTarget.dataset.index);
+                    batchGroups.splice(idx, 1);
+                    renderBatchGroupsUI();
+                    // Re-evaluate all map fills and labels to clear or re-style regions from deleted list
+                    applyAllBatchGroups();
+                });
+            });
+
+            container.querySelectorAll('.btn-move-up').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const idx = parseInt(e.currentTarget.dataset.index);
+                    if (idx > 0) {
+                        const temp = batchGroups[idx];
+                        batchGroups[idx] = batchGroups[idx - 1];
+                        batchGroups[idx - 1] = temp;
+                        renderBatchGroupsUI();
+                    }
+                });
+            });
+
+            container.querySelectorAll('.btn-move-down').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const idx = parseInt(e.currentTarget.dataset.index);
+                    if (idx < batchGroups.length - 1) {
+                        const temp = batchGroups[idx];
+                        batchGroups[idx] = batchGroups[idx + 1];
+                        batchGroups[idx + 1] = temp;
+                        renderBatchGroupsUI();
+                    }
+                });
+            });
+
+            lucide.createIcons();
+        }
+
+        // Tab Switching Logic
+        function initTabs() {
+            const tabStyleBtn = document.getElementById('tabStyleBtn');
+            const tabBatchBtn = document.getElementById('tabBatchBtn');
+            const tabDataBtn = document.getElementById('tabDataBtn');
+            const tabStyleContent = document.getElementById('tabStyleContent');
+            const tabBatchContent = document.getElementById('tabBatchContent');
+            const tabDataContent = document.getElementById('tabDataContent');
+
+            const resetTabStyles = () => {
+                [tabStyleBtn, tabBatchBtn, tabDataBtn].forEach(btn => {
+                    btn.className = 'flex-1 py-2.5 text-xs font-semibold text-slate-500 hover:text-slate-700 transition flex items-center justify-center gap-1.5';
+                });
+                [tabStyleContent, tabBatchContent, tabDataContent].forEach(content => content.classList.add('hidden'));
+            };
+
+            tabStyleBtn.addEventListener('click', () => {
+                resetTabStyles();
+                tabStyleBtn.className = 'flex-1 py-2.5 text-xs font-semibold text-indigo-600 border-b-2 border-indigo-600 transition flex items-center justify-center gap-1.5';
+                tabStyleContent.classList.remove('hidden');
+            });
+
+            tabBatchBtn.addEventListener('click', () => {
+                resetTabStyles();
+                tabBatchBtn.className = 'flex-1 py-2.5 text-xs font-semibold text-indigo-600 border-b-2 border-indigo-600 transition flex items-center justify-center gap-1.5';
+                tabBatchContent.classList.remove('hidden');
+            });
+
+            tabDataBtn.addEventListener('click', () => {
+                resetTabStyles();
+                tabDataBtn.className = 'flex-1 py-2.5 text-xs font-semibold text-indigo-600 border-b-2 border-indigo-600 transition flex items-center justify-center gap-1.5';
+                tabDataContent.classList.remove('hidden');
+            });
+        }
+
+        // Helper to Create SVG Pattern with Custom Stripe Line Color & Gap
+        function getOrCreatePattern(targetSvg, bgColor, patternType, stripeColor = '#000000', gap = currentPatternGap) {
+            if (patternType === 'solid' || !patternType) return bgColor;
+
+            const size = Math.max(4, parseInt(gap) || 8);
+            const patternId = `pat-${bgColor.replace('#', '')}-${stripeColor.replace('#', '')}-${patternType}-g${size}`;
+            let defs = targetSvg.select('defs');
+            if (defs.empty()) {
+                defs = targetSvg.append('defs');
+            }
+
+            if (defs.select(`#${patternId}`).empty()) {
+                const pat = defs.append('pattern')
+                    .attr('id', patternId)
+                    .attr('patternUnits', 'userSpaceOnUse')
+                    .attr('width', size)
+                    .attr('height', size);
+
+                // Background rect
+                pat.append('rect')
+                    .attr('width', size)
+                    .attr('height', size)
+                    .attr('fill', bgColor || '#ffffff');
+
+                const strokeW = Math.max(1, Math.min(3, size / 4));
+
+                // Dynamic Stripe/Grid lines using configured gap spacing
+                if (patternType === 'stripe-right') {
+                    pat.append('path')
+                        .attr('d', `M-${size/4},${size/4} L${size/4},-${size/4} M0,${size} L${size},0 M${size*0.75},${size*1.25} L${size*1.25},${size*0.75}`)
+                        .attr('stroke', stripeColor)
+                        .attr('stroke-width', strokeW);
+                } else if (patternType === 'stripe-left') {
+                    pat.append('path')
+                        .attr('d', `M${size*0.75},-${size/4} L${size*1.25},${size/4} M0,0 L${size},${size} M-${size/4},${size*0.75} L${size/4},${size*1.25}`)
+                        .attr('stroke', stripeColor)
+                        .attr('stroke-width', strokeW);
+                } else if (patternType === 'grid') {
+                    pat.append('path')
+                        .attr('d', `M ${size} 0 L 0 0 0 ${size}`)
+                        .attr('fill', 'none')
+                        .attr('stroke', stripeColor)
+                        .attr('stroke-width', strokeW);
+                }
+            }
+
+            return `url(#${patternId})`;
+        }
+
+        // Create Multi-Color Overlap Stripe Pattern
+        function createMultiColorOverlapPattern(targetSvg, colorsList, gap = currentPatternGap) {
+            const idSeed = colorsList.map(c => c.replace('#', '')).join('-');
+            const bandWidth = Math.max(3, Math.round((parseInt(gap) || 8) / 2));
+            const patternId = `pat-multi-${idSeed}-g${bandWidth}`;
+
+            let defs = targetSvg.select('defs');
+            if (defs.empty()) {
+                defs = targetSvg.append('defs');
+            }
+
+            if (defs.select(`#${patternId}`).empty()) {
+                const totalWidth = bandWidth * colorsList.length;
+
+                const pat = defs.append('pattern')
+                    .attr('id', patternId)
+                    .attr('patternUnits', 'userSpaceOnUse')
+                    .attr('width', totalWidth)
+                    .attr('height', totalWidth)
+                    .attr('patternTransform', 'rotate(45)');
+
+                colorsList.forEach((color, i) => {
+                    pat.append('rect')
+                        .attr('x', i * bandWidth)
+                        .attr('y', 0)
+                        .attr('width', bandWidth)
+                        .attr('height', totalWidth * 2)
+                        .attr('fill', color);
+                });
+            }
+
+            return `url(#${patternId})`;
+        }
+
+        // Helper Getters for Feature Properties
+        function getCountyName(feature) {
+            return feature.properties.COUNTYNAME || feature.properties.COUNTY || feature.properties.county || '';
+        }
+
+        function getTownName(feature) {
+            return feature.properties.TOWNNAME || feature.properties.TOWN || feature.properties.town || '';
+        }
+
+        function getFeatureId(feature) {
+            return feature.properties.TOWNCODE || feature.properties.TOWN_ID || (getCountyName(feature) + getTownName(feature));
+        }
+
+        // D3 Canvas Setup
+        function initD3Map() {
+            const container = document.getElementById('mapMain');
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+
+            svg = d3.select('#svgMap')
+                .attr('width', width)
+                .attr('height', height);
+
+            svg.append('defs');
+
+            // Background rect (Default: Light Blue Ocean #e0f2fe)
+            svg.append('rect')
+                .attr('id', 'mapBackground')
+                .attr('width', width)
+                .attr('height', height)
+                .attr('fill', '#e0f2fe');
+
+            g = svg.append('g').attr('id', 'mapGroup');
+
+            // Projection centered on Taiwan
+            projection = d3.geoMercator()
+                .center([120.95, 23.7])
+                .scale(width < 768 ? 6000 : 9500)
+                .translate([width / 2, height / 2]);
+
+            path = d3.geoPath().projection(projection);
+
+            // Zoom behavior with dynamic font scaling
+            zoom = d3.zoom()
+                .scaleExtent([0.5, 25])
+                .on('zoom', (event) => {
+                    g.attr('transform', event.transform);
+                    currentZoomScale = event.transform.k;
+                    updateLabelFontScales();
+                });
+
+            svg.call(zoom);
+        }
+
+        // Load External TopoJSON Map Data
+        async function loadTaiwanData() {
+            try {
+                const response = await fetch(GEO_DATA_URL);
+                if (!response.ok) throw new Error('Network response failed');
+                const topoData = await response.json();
+
+                // Convert TopoJSON to GeoJSON
+                const objectKey = Object.keys(topoData.objects)[0];
+                const geoFeatures = topojson.feature(topoData, topoData.objects[objectKey]).features;
+
+                mapData = geoFeatures;
+
+                // Render Features
+                renderMap(geoFeatures);
+                populateRegionList(geoFeatures);
+
+                // Apply initial batch list setup if any
+                applyAllBatchGroups();
+
+                // Hide Spinner
+                document.getElementById('loadingSpinner').classList.add('hidden');
+            } catch (err) {
+                console.error('Failed to load Taiwan GeoJSON:', err);
+                document.getElementById('loadingSpinner').innerHTML = `
+                    <div class="text-center p-4">
+                        <p class="text-red-500 font-bold text-sm">데이터 불러오기 실패</p>
+                        <p class="text-xs text-slate-500 mt-1">외부 CDN 연결을 확인해 주세요.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Tooltip Control Functions
+        const tooltipEl = document.getElementById('mapTooltip');
+        const tooltipTitle = document.getElementById('tooltipTitle');
+        const tooltipSub = document.getElementById('tooltipSub');
+
+        function showTooltip(event, feature) {
+            const county = getCountyName(feature);
+            const town = getTownName(feature);
+            const id = getFeatureId(feature);
+            const customLabel = customLabelMap.get(id);
+
+            tooltipTitle.innerText = `${county} ${town}`;
+            tooltipSub.innerText = customLabel ? `맞춤 라벨: ${customLabel}` : `구역 코드: ${id}`;
+
+            tooltipEl.classList.remove('hidden');
+            moveTooltip(event);
+        }
+
+        function moveTooltip(event) {
+            const containerRect = document.getElementById('mapMain').getBoundingClientRect();
+            const x = event.clientX - containerRect.left + 15;
+            const y = event.clientY - containerRect.top + 15;
+
+            tooltipEl.style.left = `${x}px`;
+            tooltipEl.style.top = `${y}px`;
+        }
+
+        function hideTooltip() {
+            tooltipEl.classList.add('hidden');
+        }
+
+        // Render GeoJSON Paths (Default Land: White, Border: Light Grey #cbd5e1)
+        function renderMap(features) {
+            const strokeWidth = document.getElementById('inputStrokeWidth').value;
+            const strokeColor = document.getElementById('inputStrokeColor').value;
+
+            g.selectAll('*').remove(); // Reset existing elements
+
+            g.selectAll('.township-path')
+                .data(features)
+                .enter()
+                .append('path')
+                .attr('class', 'township-path')
+                .attr('d', path)
+                .attr('data-id', d => getFeatureId(d))
+                .attr('fill', d => {
+                    const featureId = getFeatureId(d);
+                    const fillValue = colorMap.get(featureId);
+                    return fillValue || '#ffffff';
+                })
+                .attr('stroke', d => {
+                    const featureId = getFeatureId(d);
+                    return colorMap.has(featureId) ? '#64748b' : strokeColor;
+                })
+                .attr('stroke-width', strokeWidth)
+                .attr('stroke-linejoin', 'round')
+                .on('mouseenter', (event, d) => showTooltip(event, d))
+                .on('mousemove', (event) => moveTooltip(event))
+                .on('mouseleave', () => hideTooltip())
+                .on('click', (event, d) => {
+                    event.stopPropagation();
+                    handleTripleClick(d);
+                });
+
+            // Add Labels group
+            g.append('g').attr('id', 'labelsGroup');
+            if (showLabels) {
+                updateLabels(features);
+            }
+
+            updateLegendOverlay();
+        }
+
+        // Update Text Labels (Only for listed/custom regions)
+        function updateLabels(features) {
+            const labelsGroup = g.select('#labelsGroup');
+            labelsGroup.selectAll('*').remove();
+
+            if (!showLabels) return;
+
+            features.forEach(feature => {
+                const id = getFeatureId(feature);
+
+                // Render labels only if custom label exists or is in colorMap
+                if (!customLabelMap.has(id) && !colorMap.has(id)) return;
+
+                const center = path.centroid(feature);
+                if (isNaN(center[0]) || isNaN(center[1])) return;
+
+                const townName = getTownName(feature);
+                const customLabel = customLabelMap.get(id);
+                const labelText = customLabel || townName;
+
+                const textNode = labelsGroup.append('text')
+                    .attr('class', 'map-label')
+                    .attr('x', center[0])
+                    .attr('y', center[1])
+                    .attr('text-anchor', 'middle')
+                    .attr('dominant-baseline', 'central')
+                    .attr('font-weight', '600')
+                    .attr('fill', '#0f172a')
+                    .attr('stroke', '#ffffff')
+                    .attr('stroke-width', 0.6)
+                    .attr('paint-order', 'stroke fill')
+                    .attr('pointer-events', 'none')
+                    .text(labelText);
+            });
+
+            updateLabelFontScales();
+        }
+
+        // Dynamic Font Scaling helper for Zoom & Base font size
+        function updateLabelFontScales() {
+            if (!g) return;
+            const computedSize = Math.max(0.5, labelFontSize / Math.pow(currentZoomScale || 1, 0.7));
+            g.selectAll('.map-label')
+                .attr('font-size', `${computedSize}px`)
+                .attr('stroke-width', Math.max(0.1, computedSize * 0.15));
+        }
+
+        // Render Dynamic SVG Legend Overlay (Positioned Smaller & Lower in Bottom-Left Area)
+        function updateLegendOverlay() {
+            svg.select('#mapLegendOverlay').remove();
+
+            if (batchGroups.length === 0) return;
+
+            const containerHeight = document.getElementById('mapMain').clientHeight || 600;
+            const itemHeight = 15; // Smaller height per item
+            const cardHeight = batchGroups.length * itemHeight + 16;
+            const legendGroup = svg.append('g')
+                .attr('id', 'mapLegendOverlay')
+                .attr('transform', `translate(16, ${containerHeight - cardHeight - 12})`);
+
+            // Background Card (Compact size) - Changed to solid white #ffffff to prevent black background bug in PDF converters
+            legendGroup.append('rect')
+                .attr('width', 135)
+                .attr('height', cardHeight)
+                .attr('rx', 4)
+                .attr('fill', '#ffffff')
+                .attr('stroke', '#cbd5e1')
+                .attr('stroke-width', 0.8);
+
+            // Title
+            legendGroup.append('text')
+                .attr('x', 8)
+                .attr('y', 11)
+                .attr('font-size', '8.5px')
+                .attr('font-weight', 'bold')
+                .attr('fill', '#0f172a')
+                .text('범례');
+
+            // Items
+            batchGroups.forEach((group, idx) => {
+                const y = 20 + (idx * itemHeight);
+                const itemG = legendGroup.append('g').attr('transform', `translate(8, ${y})`);
+
+                const fillStyle = getOrCreatePattern(svg, group.color, group.pattern, group.stripeColor || '#000000');
+
+                itemG.append('rect')
+                    .attr('width', 9)
+                    .attr('height', 9)
+                    .attr('rx', 1.5)
+                    .attr('fill', fillStyle)
+                    .attr('stroke', '#64748b')
+                    .attr('stroke-width', 0.4);
+
+                const displayName = group.name || `목록 ${idx + 1}`;
+                itemG.append('text')
+                    .attr('x', 14)
+                    .attr('y', 7)
+                    .attr('font-size', '8px')
+                    .attr('fill', '#334155')
+                    .attr('font-weight', '500')
+                    .text(displayName.length > 16 ? displayName.substring(0, 15) + '…' : displayName);
+            });
+        }
+
+        // Handle Triple Click Selection / Deselection
+        function handleTripleClick(feature) {
+            const id = getFeatureId(feature);
+
+            if (clickTracker.lastId === id) {
+                clickTracker.count += 1;
+            } else {
+                clickTracker.lastId = id;
+                clickTracker.count = 1;
+            }
+
+            if (clickTracker.timer) clearTimeout(clickTracker.timer);
+
+            clickTracker.timer = setTimeout(() => {
+                clickTracker.count = 0;
+                clickTracker.lastId = null;
+            }, 500);
+
+            // Select on Single Click for UI responsiveness
+            selectRegion(feature);
+
+            // Perform Toggle Action on Triple Click
+            if (clickTracker.count === 3) {
+                if (colorMap.has(id)) {
+                    // Deselect / Reset to Default
+                    colorMap.delete(id);
+                    customLabelMap.delete(id);
+                } else {
+                    // Apply current active styling
+                    const fillValue = getOrCreatePattern(svg, currentFillColor, currentPatternType, currentStripeColor, currentPatternGap);
+                    colorMap.set(id, fillValue);
+                }
+
+                clickTracker.count = 0;
+                clickTracker.lastId = null;
+
+                if (mapData) renderMap(mapData);
+            }
+        }
+
+        // Apply Currently Selected Color & Pattern to Selected Region
+        function applyColorToSelection() {
+            if (!selectedFeature) return;
+            const id = getFeatureId(selectedFeature);
+            const fillValue = getOrCreatePattern(svg, currentFillColor, currentPatternType, currentStripeColor, currentPatternGap);
+            colorMap.set(id, fillValue);
+            if (mapData) renderMap(mapData);
+        }
+
+        // Region Selection Handler
+        function selectRegion(feature) {
+            selectedFeature = feature;
+            const county = getCountyName(feature);
+            const town = getTownName(feature);
+            const id = getFeatureId(feature);
+
+            document.getElementById('selectedRegionName').innerText = `${county} ${town}`;
+            document.getElementById('selectedRegionDetail').innerText = `코드: ${id}`;
+
+            const labelInput = document.getElementById('customLabelInput');
+            labelInput.value = customLabelMap.get(id) || '';
+
+            g.selectAll('.township-path').attr('stroke-width', d => {
+                const isSelected = getFeatureId(d) === id;
+                return isSelected ? 2.5 : document.getElementById('inputStrokeWidth').value;
+            }).attr('stroke', d => {
+                const isSelected = getFeatureId(d) === id;
+                return isSelected ? '#1e293b' : (colorMap.has(getFeatureId(d)) ? '#64748b' : document.getElementById('inputStrokeColor').value);
+            });
+        }
+
+        // Populate Region Search & Explorer Tree
+        function populateRegionList(features) {
+            const container = document.getElementById('regionList');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const countyMap = new Map();
+            features.forEach(f => {
+                const county = getCountyName(f) || '기타';
+                if (!countyMap.has(county)) countyMap.set(county, []);
+                countyMap.get(county).push(f);
+            });
+
+            countyMap.forEach((townships, countyName) => {
+                const countyGroup = document.createElement('div');
+                countyGroup.className = 'border border-slate-200 rounded-md overflow-hidden bg-white mb-1';
+
+                const header = document.createElement('div');
+                header.className = 'px-3 py-1.5 bg-slate-50 font-bold text-xs text-slate-700 flex justify-between items-center cursor-pointer hover:bg-slate-100';
+                header.innerHTML = `<span>${countyName} (${townships.length})</span> <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>`;
+
+                const townContainer = document.createElement('div');
+                townContainer.className = 'p-1.5 space-y-1 hidden bg-white border-t border-slate-100 grid grid-cols-2 gap-1';
+
+                townships.forEach(t => {
+                    const btn = document.createElement('button');
+                    btn.className = 'text-left text-[11px] px-2 py-1 rounded hover:bg-indigo-50 hover:text-indigo-600 transition truncate text-slate-600';
+                    btn.innerText = getTownName(t);
+                    btn.addEventListener('click', () => {
+                        selectRegion(t);
+                        const bounds = path.bounds(t);
+                        const dx = bounds[1][0] - bounds[0][0];
+                        const dy = bounds[1][1] - bounds[0][1];
+                        const x = (bounds[0][0] + bounds[1][0]) / 2;
+                        const y = (bounds[0][1] + bounds[1][1]) / 2;
+                        const scale = Math.max(1, Math.min(15, 0.9 / Math.max(dx / 800, dy / 600)));
+                        const translate = [800 / 2 - scale * x, 600 / 2 - scale * y];
+
+                        svg.transition().duration(750).call(
+                            zoom.transform,
+                            d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale)
+                        );
+                    });
+                    townContainer.appendChild(btn);
+                });
+
+                header.addEventListener('click', () => {
+                    townContainer.classList.toggle('hidden');
+                });
+
+                countyGroup.appendChild(header);
+                countyGroup.appendChild(townContainer);
+                container.appendChild(countyGroup);
+            });
+
+            lucide.createIcons();
+        }
+
+        // Apply All Multi-list Batch Groups (Handles Overlaps with Multi-Stripe Patterns)
+        function applyAllBatchGroups() {
+            if (!mapData) return;
+
+            // Reset maps to clear orphan regions before re-applying active batch groups
+            colorMap.clear();
+            customLabelMap.clear();
+
+            const regionGroupsMap = new Map(); // Map of featureId -> Array of Group configs
+
+            batchGroups.forEach(group => {
+                if (!group.text) return;
+                const lines = group.text.split('\n');
+
+                lines.forEach(line => {
+                    const trimmed = line.trim();
+                    if (!trimmed) return;
+
+                    let searchName = trimmed;
+                    let targetLabel = '';
+
+                    if (trimmed.includes('=')) {
+                        const parts = trimmed.split('=');
+                        searchName = parts[0].trim();
+                        targetLabel = parts[1].trim();
+                    }
+
+                    const matchedFeatures = mapData.filter(f => {
+                        const town = getTownName(f);
+                        const county = getCountyName(f);
+                        const fullName = `${county}${town}`;
+                        return town === searchName || fullName === searchName;
+                    });
+
+                    matchedFeatures.forEach(feature => {
+                        const id = getFeatureId(feature);
+                        if (!regionGroupsMap.has(id)) regionGroupsMap.set(id, []);
+                        regionGroupsMap.get(id).push({
+                            group,
+                            label: targetLabel
+                        });
+                    });
+                });
+            });
+
+            // Process collected region groups
+            regionGroupsMap.forEach((matches, id) => {
+                if (matches.length === 1) {
+                    const { group, label } = matches[0];
+                    const fillValue = getOrCreatePattern(svg, group.color, group.pattern, group.stripeColor || '#000000', currentPatternGap);
+                    colorMap.set(id, fillValue);
+                    if (label) customLabelMap.set(id, label);
+                } else if (matches.length > 1) {
+                    // Generate Multi-Stripe Overlap Pattern for multiple matching lists
+                    const colorsList = matches.map(m => m.group.color);
+                    const fillValue = createMultiColorOverlapPattern(svg, colorsList, currentPatternGap);
+                    colorMap.set(id, fillValue);
+                    
+                    // Deduplicate and combine labels
+                    const rawLabels = matches.map(m => m.label).filter(l => l && l.trim().length > 0);
+                    // Filter out duplicate identical labels
+                    const uniqueLabels = [...new Set(rawLabels)];
+                    if (uniqueLabels.length > 0) {
+                        customLabelMap.set(id, uniqueLabels.join(' / '));
+                    }
+                }
+            });
+
+            if (mapData) renderMap(mapData);
+
+            const statusEl = document.getElementById('batchResultStatus');
+            if (statusEl) {
+                statusEl.innerText = `총 ${regionGroupsMap.size}개 행정구역에 목록이 적용되었습니다.`;
+                statusEl.classList.remove('hidden');
+            }
+        }
+
+        // Export Helper to Create Clipless Full Bounds SVG Node (Includes Legend)
+        function createExportableSvgNode() {
+            const cloneSvg = svg.node().cloneNode(true);
+            const cloneD3 = d3.select(cloneSvg);
+
+            // Calculate precise geographic bounding box of map features
+            let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+
+            mapData.forEach(feature => {
+                const b = path.bounds(feature);
+                if (b[0][0] < minX) minX = b[0][0];
+                if (b[0][1] < minY) minY = b[0][1];
+                if (b[1][0] > maxX) maxX = b[1][0];
+                if (b[1][1] > maxY) maxY = b[1][1];
+            });
+
+            // Adjust bounding box to include the overlay title and bottom-left legend if present
+            const padding = 40;
+            const legendOverlay = svg.select('#mapLegendOverlay');
+            if (!legendOverlay.empty()) {
+                const containerHeight = document.getElementById('mapMain').clientHeight || 600;
+                const legendHeight = batchGroups.length * 15 + 16;
+                const legendTop = containerHeight - legendHeight - 12;
+                if (legendTop < minY) minY = Math.min(minY, legendTop - 10);
+            }
+
+            const exportX = minX - padding;
+            const exportY = minY - padding;
+            const bboxWidth = (maxX - minX) + (padding * 2);
+            const bboxHeight = (maxY - minY) + (padding * 2);
+
+            // Expand Ocean Background Rect to cover the full export Bounding Box
+            const cloneBg = cloneD3.select('#mapBackground');
+            if (!cloneBg.empty()) {
+                cloneBg.attr('x', exportX)
+                       .attr('y', exportY)
+                       .attr('width', bboxWidth)
+                       .attr('height', bboxHeight);
+            }
+
+            // Reset transform for export to prevent zoom distortion
+            cloneD3.select('#mapGroup').attr('transform', null);
+
+            // Re-position legend in exported SVG clone relative to the bounding box
+            const cloneLegend = cloneD3.select('#mapLegendOverlay');
+            if (!cloneLegend.empty()) {
+                const legendCardHeight = batchGroups.length * 15 + 16;
+                const exportLegendY = (maxY + padding) - legendCardHeight - 8;
+                cloneLegend.attr('transform', `translate(${minX + 8}, ${exportLegendY})`);
+            }
+
+            // Adjust viewbox to fit whole map and legend without clipping
+            cloneSvg.setAttribute('viewBox', `${exportX} ${exportY} ${bboxWidth} ${bboxHeight}`);
+            cloneSvg.setAttribute('width', bboxWidth);
+            cloneSvg.setAttribute('height', bboxHeight);
+
+            return { cloneSvg, bboxWidth, bboxHeight };
+        }
+
+        // Setup All Event Listeners
+        function setupEventListeners() {
+            // UI Color Controls
+            document.getElementById('customColorPicker').addEventListener('change', (e) => {
+                currentFillColor = e.target.value;
+            });
+
+            document.getElementById('btnApplyCustomColor').addEventListener('click', () => {
+                saveColor(currentFillColor);
+                applyColorToSelection();
+            });
+
+            document.getElementById('selectPatternType').addEventListener('change', (e) => {
+                currentPatternType = e.target.value;
+                applyColorToSelection();
+            });
+
+            document.getElementById('inputStripeColor').addEventListener('change', (e) => {
+                currentStripeColor = e.target.value;
+                saveColor(currentStripeColor);
+                applyColorToSelection();
+            });
+
+            document.getElementById('inputPatternGap').addEventListener('input', (e) => {
+                currentPatternGap = parseInt(e.target.value);
+                document.getElementById('valPatternGap').innerText = `${currentPatternGap}px`;
+                if (mapData) renderMap(mapData);
+            });
+
+            document.getElementById('customLabelInput').addEventListener('input', (e) => {
+                if (!selectedFeature) return;
+                const id = getFeatureId(selectedFeature);
+                if (e.target.value.trim()) {
+                    customLabelMap.set(id, e.target.value.trim());
+                } else {
+                    customLabelMap.delete(id);
+                }
+                if (mapData) updateLabels(mapData);
+            });
+
+            // Fill entire county
+            document.getElementById('btnFillCounty').addEventListener('click', () => {
+                if (!selectedFeature || !mapData) return;
+                const countyName = getCountyName(selectedFeature);
+                const fillValue = getOrCreatePattern(svg, currentFillColor, currentPatternType, currentStripeColor, currentPatternGap);
+
+                mapData.forEach(f => {
+                    if (getCountyName(f) === countyName) {
+                        colorMap.set(getFeatureId(f), fillValue);
+                    }
+                });
+
+                renderMap(mapData);
+            });
+
+            // Stroke & Global Appearance Options
+            document.getElementById('inputStrokeWidth').addEventListener('input', (e) => {
+                const val = e.target.value;
+                document.getElementById('valStrokeWidth').innerText = `${val}px`;
+                g.selectAll('.township-path').attr('stroke-width', val);
+            });
+
+            document.getElementById('inputStrokeColor').addEventListener('change', (e) => {
+                if (mapData) renderMap(mapData);
+            });
+
+            document.getElementById('inputBgColor').addEventListener('change', (e) => {
+                svg.select('#mapBackground').attr('fill', e.target.value);
+            });
+
+            document.getElementById('toggleLabels').addEventListener('change', (e) => {
+                showLabels = e.target.checked;
+                if (mapData) updateLabels(mapData);
+            });
+
+            document.getElementById('inputFontSize').addEventListener('input', (e) => {
+                labelFontSize = parseFloat(e.target.value);
+                document.getElementById('valFontSize').innerText = `${labelFontSize}px`;
+                updateLabelFontScales();
+            });
+
+            // Batch List Add/Apply/Clear
+            document.getElementById('btnAddBatchGroup').addEventListener('click', () => {
+                batchGroups.push({
+                    id: Date.now(),
+                    name: `목록 ${batchGroups.length + 1}`,
+                    color: '#10b981',
+                    stripeColor: '#000000',
+                    pattern: 'solid',
+                    text: ''
+                });
+                renderBatchGroupsUI();
+            });
+
+            document.getElementById('btnApplyBatchList').addEventListener('click', () => {
+                applyAllBatchGroups();
+            });
+
+            document.getElementById('btnClearBatchInput').addEventListener('click', () => {
+                colorMap.clear();
+                customLabelMap.clear();
+                if (mapData) renderMap(mapData);
+                document.getElementById('batchResultStatus').classList.add('hidden');
+            });
+
+            // Map Reset Actions
+            document.getElementById('btnResetView').addEventListener('click', () => {
+                svg.transition().duration(750).call(zoom.transform, d3.zoomIdentity);
+            });
+
+            document.getElementById('btnResetColors').addEventListener('click', () => {
+                colorMap.clear();
+                customLabelMap.clear();
+                if (mapData) renderMap(mapData);
+            });
+
+            // Zoom Buttons
+            document.getElementById('btnZoomIn').addEventListener('click', () => {
+                svg.transition().duration(300).call(zoom.scaleBy, 1.3);
+            });
+
+            document.getElementById('btnZoomOut').addEventListener('click', () => {
+                svg.transition().duration(300).call(zoom.scaleBy, 0.7);
+            });
+
+            // Search Filter
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase().trim();
+                const items = document.querySelectorAll('#regionList > div');
+
+                items.forEach(item => {
+                    const text = item.innerText.toLowerCase();
+                    if (text.includes(term)) {
+                        item.classList.remove('hidden');
+                        if (term.length > 0) {
+                            const sub = item.querySelector('div:nth-child(2)');
+                            if (sub) sub.classList.remove('hidden');
+                        }
+                    } else {
+                        item.classList.add('hidden');
+                    }
+                });
+            });
+
+            // SVG Download Handler
+            document.getElementById('btnExportSVG').addEventListener('click', () => {
+                const { cloneSvg } = createExportableSvgNode();
+                const serializer = new XMLSerializer();
+                const svgString = serializer.serializeToString(cloneSvg);
+                const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `Taiwan_Township_Map_${Date.now()}.svg`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+
+            // PNG Download Handler
+            document.getElementById('btnExportPNG').addEventListener('click', () => {
+                const { cloneSvg, bboxWidth, bboxHeight } = createExportableSvgNode();
+                const serializer = new XMLSerializer();
+                const svgString = serializer.serializeToString(cloneSvg);
+
+                const img = new Image();
+                const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+                const url = URL.createObjectURL(svgBlob);
+
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    // Ultra High Resolution (3x scale) for crisp text and line quality
+                    const scaleFactor = 3;
+                    canvas.width = bboxWidth * scaleFactor;
+                    canvas.height = bboxHeight * scaleFactor;
+                    const ctx = canvas.getContext('2d');
+                    ctx.scale(scaleFactor, scaleFactor);
+
+                    // Enable crisp rendering settings
+                    ctx.imageSmoothingEnabled = true;
+                    ctx.imageSmoothingQuality = 'high';
+
+                    ctx.drawImage(img, 0, 0);
+
+                    const pngUrl = canvas.toDataURL('image/png', 1.0);
+                    const link = document.createElement('a');
+                    link.href = pngUrl;
+                    link.download = `Taiwan_Township_Map_HighRes_${Date.now()}.png`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                };
+
+                img.src = url;
+            });
+        }
+    </script>
+</body>
+</html>
