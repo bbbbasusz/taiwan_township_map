@@ -13,17 +13,14 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+            font-family: 'Inter', 'Noto Sans KR', 'Noto Sans TC', sans-serif;
         }
         .map-container {
             background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
             background-size: 20px 20px;
-        }
-        .dark .map-container {
-            background-image: radial-gradient(#374151 1px, transparent 1px);
         }
         .township-path {
             transition: fill 0.15s ease, stroke-width 0.15s ease;
@@ -73,7 +70,7 @@
                 <i data-lucide="download" class="w-3.5 h-3.5"></i> SVG 내보내기
             </button>
             <button id="btnExportPNG" class="px-3.5 py-1.5 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow-sm transition flex items-center gap-1.5">
-                <i data-lucide="image" class="w-3.5 h-3.5"></i> PNG 이미지 저장
+                <i data-lucide="image" class="w-3.5 h-3.5"></i> PNG 이미지 저장 (고화질)
             </button>
         </div>
     </header>
@@ -85,14 +82,14 @@
         <aside class="w-80 bg-white border-r border-slate-200 flex flex-col z-10 shadow-sm">
             <!-- Tabs Header -->
             <div class="flex border-b border-slate-200 bg-slate-50/50">
-                <button id="tabStyleBtn" class="flex-1 py-2.5 text-xs font-semibold text-indigo-600 border-b-2 border-indigo-600 transition flex items-center justify-center gap-1.5">
-                    <i data-lucide="palette" class="w-3.5 h-3.5"></i> 개별 스타일
+                <button id="tabStyleBtn" class="flex-1 py-2.5 text-xs font-semibold text-indigo-600 border-b-2 border-indigo-600 transition flex items-center justify-center gap-1">
+                    <i data-lucide="palette" class="w-3.5 h-3.5"></i> 스타일
                 </button>
-                <button id="tabBatchBtn" class="flex-1 py-2.5 text-xs font-semibold text-slate-500 hover:text-slate-700 transition flex items-center justify-center gap-1.5">
-                    <i data-lucide="file-text" class="w-3.5 h-3.5"></i> 일괄 목록 입력
+                <button id="tabBatchBtn" class="flex-1 py-2.5 text-xs font-semibold text-slate-500 hover:text-slate-700 transition flex items-center justify-center gap-1">
+                    <i data-lucide="layers" class="w-3.5 h-3.5"></i> 통합 목록
                 </button>
-                <button id="tabDataBtn" class="flex-1 py-2.5 text-xs font-semibold text-slate-500 hover:text-slate-700 transition flex items-center justify-center gap-1.5">
-                    <i data-lucide="layers" class="w-3.5 h-3.5"></i> 목록 & 구역
+                <button id="tabDataBtn" class="flex-1 py-2.5 text-xs font-semibold text-slate-500 hover:text-slate-700 transition flex items-center justify-center gap-1">
+                    <i data-lucide="search" class="w-3.5 h-3.5"></i> 검색
                 </button>
             </div>
 
@@ -112,12 +109,409 @@
                         </div>
                     </div>
 
+                    <!-- Bulk Custom Multilingual Label Mapping (Style Tab Integrated) -->
+                    <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg space-y-2">
+                        <div class="flex items-center justify-between">
+                            <label class="block text-xs font-semibold text-slate-700">지명 맞춤 라벨 일괄 치환 (실시간)</label>
+                            <span class="text-[10px] text-emerald-600 font-bold flex items-center gap-1"><i data-lucide="zap" class="w-3 h-3"></i> 즉시 반영됨</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500 leading-tight">입력하는 즉시 지도, 목록, 수치 표기에 실시간 반영됩니다.</p>
+                        <textarea id="bulkCustomLabelText" rows="5" placeholder="信義區 = 신의구&#10;板橋區 = 판교구&#10;桃園區 = 도원구&#10;西屯區 = 셔둔구&#10;安平區 = 안평구&#10;苓雅區 = 령아구" class="w-full p-2 text-xs font-mono border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-1 focus:ring-indigo-500">臺北市 = ᄃᆡ븍시
+松山區 = 숑산구
+信義區 = 신의구
+大安區 = 대안구
+中山區 = 듕산구
+中正區 = 듕졍구
+大同區 = 대동구
+萬華區 = 만화구
+文山區 = 문산구
+南港區 = 남항구
+內湖區 = ᄂᆡ호구
+士林區 = ᄉᆞ림구
+北投區 = 븍투구
+基隆市 = 긔륭시
+中正區 = 듕졍구
+七堵區 = 칠도구
+暖暖區 = 난난구
+仁愛區 = 인ᄋᆡ구
+中山區 = 듕산구
+安樂區 = 안악구
+信義區 = 신의구
+新北市 = 신븍시
+板橋區 = 판교구
+三重區 = 삼듕구
+中和區 = 듕화구
+永和區 = 영화구
+新莊區 = 신장구
+新店區 = 신뎜구
+樹林區 = 슈림구
+鶯歌區 = ᄋᆡᆼ가구
+三峽區 = 삼협구
+淡水區 = 담슈구
+汐止區 = 셕지구
+瑞芳區 = 셔방구
+土城區 = 토셩구
+蘆洲區 = 로쥬구
+五股區 = 오고구
+泰山區 = 태산구
+林口區 = 림구구
+深坑區 = 심ᄀᆡᆼ구
+石碇區 = 셕뎡구
+坪林區 = 평림구
+三芝區 = 삼지구
+石門區 = 셕문구
+八里區 = 팔리구
+平溪區 = 평계구
+雙溪區 = 상계구
+貢寮區 = 공료구
+金山區 = 금산구
+萬里區 = 만리구
+烏來區 = 오ᄅᆡ구
+桃園市 = 도원시
+桃園區 = 도원구
+中壢區 = 듕력구
+大溪區 = 대계구
+楊梅區 = 양ᄆᆡ구
+蘆竹區 = 로듁구
+大園區 = 대원구
+龜山區 = 귀산구
+八德區 = 팔덕구
+龍潭區 = 룡담구
+平鎮區 = 평딘구
+新屋區 = 신옥구
+觀音區 = 관음구
+復興區 = 부흥구
+新竹市 = 신듁시
+東區 = 동구
+北區 = 븍구
+香山區 = 향산구
+新竹縣 = 신듁현
+竹北市 = 듁븍시
+關西鎮 = 관셔딘
+新埔鎮 = 신보딘
+竹東鎮 = 듁동딘
+湖口鄉 = 호구향
+橫山鄉 = 횡산향
+新豐鄉 = 신풍향
+芎林鄉 = 궁림향
+寶山鄉 = 보산향
+北埔鄉 = 븍보향
+峨眉鄉 = 아비향
+尖石鄉 = 쳠셕향
+五峰鄉 = 오봉향
+苗栗縣 = 묘률현
+苗栗市 = 묘률시
+頭份市 = 두분시
+苑裡鎮 = 원리딘
+通霄鎮 = 통쇼딘
+竹南鎮 = 듁남딘
+後龍鎮 = 후룡딘
+卓蘭鎮 = 탁란딘
+大湖鄉 = 대호향
+公館鄉 = 공관향
+銅鑼鄉 = 동라향
+南庄鄉 = 남쟝향
+頭屋鄉 = 두옥향
+三義鄉 = 삼의향
+西湖鄉 = 셔호향
+造橋鄉 = 조교향
+三灣鄉 = 삼만향
+獅潭鄉 = ᄉᆞ담향
+泰安鄉 = 태안향
+臺中市 = ᄃᆡ듕시
+中區 = 듕구
+東區 = 동구
+南區 = 남구
+西區 = 셔구
+北區 = 븍구
+西屯區 = 셔둔구
+南屯區 = 남둔구
+北屯區 = 븍둔구
+豐原區 = 풍원구
+東勢區 = 동셔구
+大甲區 = 대갑구
+清水區 = 쳥슈구
+沙鹿區 = 사록구
+梧棲區 = 오셔구
+后里區 = 후리구
+神岡區 = 신강구
+潭子區 = 담ᄌᆞ구
+大雅區 = 대아구
+新社區 = 신샤구
+石岡區 = 셕강구
+外埔區 = 외보구
+大安區 = 대안구
+烏日區 = 오ᅀᅵᆯ구
+大肚區 = 대두구
+龍井區 = 룡졍구
+霧峰區 = 무봉구
+太平區 = 태평구
+大里區 = 대리구
+和平區 = 화평구
+彰化縣 = 챵화현
+彰化市 = 챵화시
+員林市 = 원림시
+鹿港鎮 = 록항딘
+和美鎮 = 화미딘
+北斗鎮 = 븍두딘
+溪湖鎮 = 계호딘
+田中鎮 = 딘듕딘
+二林鎮 = 이림딘
+線西鄉 = 션셔향
+伸港鄉 = 신항향
+福興鄉 = 복흥향
+秀水鄉 = 슈슈향
+花壇鄉 = 화단향
+芬園鄉 = 분원향
+大村鄉 = 대촌향
+埔鹽鄉 = 보염향
+埔心鄉 = 보심향
+永靖鄉 = 영졍향
+社頭鄉 = 샤두향
+二水鄉 = 이슈향
+田尾鄉 = 딘미향
+埤頭鄉 = 비두향
+芳苑鄉 = 방원향
+大城鄉 = 대셩향
+竹塘鄉 = 듁당향
+溪州鄉 = 계쥬향
+南投縣 = 남투현
+南投市 = 남투시
+埔里鎮 = 보리딘
+草屯鎮 = 초둔딘
+竹山鎮 = 듁산딘
+集集鎮 = 집집딘
+名間鄉 = 명간향
+鹿谷鄉 = 록곡향
+中寮鄉 = 듕료향
+魚池鄉 = 어디향
+國姓鄉 = 국셩향
+水里鄉 = 슈리향
+信義鄉 = 신의향
+仁愛鄉 = 인ᄋᆡ향
+雲林縣 = 운림현
+斗六市 = 두륙시
+斗南鎮 = 두남딘
+虎尾鎮 = 호미딘
+西螺鎮 = 셔라딘
+土庫鎮 = 토고딘
+北港鎮 = 븍항딘
+古坑鄉 = 고ᄀᆡᆼ향
+大埤鄉 = 대비향
+莿桐鄉 = ᄌᆞ동향
+林內鄉 = 림ᄂᆡ향
+二崙鄉 = 이륜향
+崙背鄉 = 륜ᄇᆡ향
+麥寮鄉 = ᄆᆡᆨ료향
+東勢鄉 = 동셔향
+褒忠鄉 = 포튱향
+臺西鄉 = ᄃᆡ셔향
+元長鄉 = 원댱향
+四湖鄉 = ᄉᆞ호향
+口湖鄉 = 구호향
+水林鄉 = 슈림향
+嘉義市 = 가의시
+東區 = 동구
+西區 = 셔구
+嘉義縣 = 가의현
+太保市 = 태보시
+朴子市 = 박ᄌᆞ시
+布袋鎮 = 포ᄃᆡ딘
+大林鎮 = 대림딘
+民雄鄉 = 민웅향
+溪口鄉 = 계구향
+新港鄉 = 신항향
+六腳鄉 = 륙각향
+東石鄉 = 동셕향
+義竹鄉 = 의듁향
+鹿草鄉 = 록초향
+水上鄉 = 슈샹향
+中埔鄉 = 듕보향
+竹崎鄉 = 듁긔향
+梅山鄉 = ᄆᆡ산향
+番路鄉 = 번로향
+大埔鄉 = 대보향
+阿里山鄉 = 아리산향
+臺南市 = ᄃᆡ남시
+新營區 = 신영구
+鹽水區 = 염슈구
+白河區 = ᄇᆡᆨ하구
+柳營區 = 류영구
+後壁區 = 후벽구
+東山區 = 동산구
+麻豆區 = 마두구
+下營區 = 하영구
+六甲區 = 륙갑구
+官田區 = 관딘구
+大內區 = 대ᄂᆡ구
+佳里區 = 가리구
+學甲區 = ᄒᆞᆨ갑구
+西港區 = 셔항구
+七股區 = 칠고구
+將軍區 = 쟝군구
+北門區 = 븍문구
+新化區 = 신화구
+善化區 = 션화구
+新市區 = 신시구
+安定區 = 안뎡구
+山上區 = 산샹구
+玉井區 = 옥졍구
+楠西區 = 남셔구
+南化區 = 남화구
+左鎮區 = 자딘구
+仁德區 = 인덕구
+歸仁區 = 귀인구
+關廟區 = 관묘구
+龍崎區 = 룡긔구
+永康區 = 영강구
+東區 = 동구
+南區 = 남구
+北區 = 븍구
+安南區 = 안남구
+安平區 = 안평구
+中西區 = 듕셔구
+高雄市 = 고웅시
+鹽埕區 = 염뎡구
+鼓山區 = 고산구
+左營區 = 자영구
+楠梓區 = 남ᄌᆡ구
+三民區 = 삼민구
+新興區 = 신흥구
+前金區 = 젼금구
+苓雅區 = 령아구
+前鎮區 = 젼딘구
+旗津區 = 긔진구
+小港區 = 쇼항구
+鳳山區 = 봉산구
+林園區 = 림원구
+大寮區 = 대료구
+大樹區 = 대슈구
+大社區 = 대샤구
+仁武區 = 인무구
+鳥松區 = 됴숑구
+岡山區 = 강산구
+橋頭區 = 교두구
+燕巢區 = 연소구
+田寮區 = 딘료구
+阿蓮區 = 아련구
+路竹區 = 로듁구
+湖內區 = 호ᄂᆡ구
+茄萣區 = 가뎡구
+永安區 = 영안구
+彌陀區 = 미타구
+梓官區 = ᄌᆡ관구
+旗山區 = 긔산구
+美濃區 = 미롱구
+六龜區 = 륙귀구
+甲仙區 = 갑션구
+杉林區 = 삼림구
+內門區 = ᄂᆡ문구
+茂林區 = 무림구
+桃源區 = 도원구
+那瑪夏區 = 나마하구
+屏東縣 = 병ʟ동현
+屏東市 = 병ʟ동시
+潮州鎮 = 됴쥬딘
+東港鎮 = 동항딘
+恆春鎮 = ᄒᆞᆼ츈딘
+萬丹鄉 = 만단향
+長治鄉 = 댱티향
+麟洛鄉 = 린락향
+九如鄉 = 구여향
+里港鄉 = 리항향
+鹽埔鄉 = 염보향
+高樹鄉 = 고슈향
+萬巒鄉 = 만만향
+內埔鄉 = ᄂᆡ보향
+竹田鄉 = 듁딘향
+新埤鄉 = 신비향
+枋寮鄉 = 방료향
+新園鄉 = 신원향
+崁頂鄉 = 감뎡향
+林邊鄉 = 림변향
+南州鄉 = 남쥬향
+佳冬鄉 = 가동향
+琉球鄉 = 류구향
+車城鄉 = 챠셩향
+滿州鄉 = 만쥬향
+枋山鄉 = 방산향
+三地門鄉 = 삼디문향
+霧臺鄉 = 무ᄃᆡ향
+瑪家鄉 = 마가향
+泰武鄉 = 태무향
+來義鄉 = ᄅᆡ의향
+春日鄉 = 츈ᅀᅵᆯ향
+獅子鄉 = ᄉᆞᄌᆞ향
+牡丹鄉 = 모단향
+宜蘭縣 = 의란현
+宜蘭市 = 의란시
+羅東鎮 = 라동딘
+蘇澳鎮 = 소욱딘
+頭城鎮 = 두셩딘
+礁溪鄉 = 쵸계향
+壯圍鄉 = 장위향
+員山鄉 = 원산향
+冬山鄉 = 동산향
+五結鄉 = 오결향
+三星鄉 = 삼셩향
+大同鄉 = 대동향
+南澳鄉 = 남욱향
+花蓮縣 = 화련현
+花蓮市 = 화련시
+鳳林鎮 = 봉림딘
+玉里鎮 = 옥리딘
+新城鄉 = 신셩향
+吉安鄉 = 길안향
+壽豐鄉 = 슈풍향
+光復鄉 = 광복(부)향
+豐濱鄉 = 풍빈향
+瑞穗鄉 = 셔슈향
+富里鄉 = 부리향
+秀林鄉 = 슈림향
+萬榮鄉 = 만영향
+卓溪鄉 = 탁계향
+臺東縣 = ᄃᆡ동현
+臺東市 = ᄃᆡ동시
+成功鎮 = 셩공딘
+關山鎮 = 관산딘
+卑南鄉 = 비남향
+大武鄉 = 대무향
+太麻里鄉 = 태마리향
+東河鄉 = 동하향
+長濱鄉 = 댱빈향
+鹿野鄉 = 록야향
+池上鄉 = 디샹향
+綠島鄉 = 록도향
+延平鄉 = 연평향
+海端鄉 = ᄒᆡ단향
+達仁鄉 = 달인향
+金峰鄉 = 금봉향
+蘭嶼鄉 = 란셔향
+澎湖縣 = ᄑᆡᆼ호현
+馬公市 = 마공시
+湖西鄉 = 호셔향
+白沙鄉 = ᄇᆡᆨ사향
+西嶼鄉 = 셔셔향
+望安鄉 = 망안향
+七美鄉 = 칠미향
+金門縣 = 금문현
+金城鎮 = 금셩딘
+金湖鎮 = 금호딘
+金沙鎮 = 금사딘
+金寧鄉 = 금령향
+烈嶼鄉 = 렬셔향
+烏坵鄉 = 오구향
+連江縣 = 련강현
+南竿鄉 = 남간향
+北竿鄉 = 븍간향
+莒光鄉 = 거광향
+東引鄉 = 동인향</textarea>
+                    </div>
+
                     <!-- Quick Palette -->
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-2">팔레트 색상 지정</label>
-                        <div class="grid grid-cols-6 gap-2" id="colorPalette">
-                            <!-- JS Inject palette buttons -->
-                        </div>
+                        <div class="grid grid-cols-6 gap-2" id="colorPalette"></div>
                     </div>
 
                     <!-- Custom Color Picker -->
@@ -129,40 +523,38 @@
                         </div>
                     </div>
 
-                    <!-- Used / History Colors Palette (Positioned right below Custom Color Picker) -->
+                    <!-- Used / History Colors Palette -->
                     <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-lg space-y-1.5">
                         <div class="flex justify-between items-center">
                             <label class="block text-xs font-semibold text-slate-700">사용한 / 추천 색상 선택</label>
                             <span class="text-[10px] text-slate-400">클릭하여 선택</span>
                         </div>
-                        <div class="flex flex-wrap gap-1.5 min-h-[32px]" id="savedColorsPalette">
-                            <!-- JS Inject saved colors -->
-                        </div>
+                        <div class="flex flex-wrap gap-1.5 min-h-[32px]" id="savedColorsPalette"></div>
                     </div>
 
                     <!-- Pattern Selection Controls -->
                     <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 space-y-2">
                         <label class="block text-xs font-semibold text-slate-700">패턴 & 사선 설정</label>
+                        <p class="text-[10px] text-slate-500 leading-tight">여러 목록에 겹친 지역의 <strong>색상 배열 방식</strong>을 설정합니다. (색상 자체로 패턴을 구성)</p>
                         <div class="grid grid-cols-2 gap-2">
                             <div>
-                                <label class="text-[10px] text-slate-500 block mb-0.5">패턴 종류</label>
+                                <label class="text-[10px] text-slate-500 block mb-0.5">색상 배열 패턴</label>
                                 <select id="selectPatternType" class="w-full text-xs bg-white border border-slate-200 rounded px-2 py-1">
-                                    <option value="solid">단색 (Solid)</option>
-                                    <option value="stripe-right">오른쪽 사선 (/)</option>
-                                    <option value="stripe-left">왼쪽 사선 (\)</option>
-                                    <option value="grid">격자/십자 (+)</option>
+                                    <option value="solid">세로 띠 (Solid)</option>
+                                    <option value="stripe-left">왼쪽 사선 (/)</option>
+                                    <option value="stripe-right">오른쪽 사선 (\)</option>
+                                    <option value="grid">격자/체크 (+)</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="text-[10px] text-slate-500 block mb-0.5">사선(선) 색상</label>
+                                <label class="text-[10px] text-slate-500 block mb-0.5">개별 사선 색상 (단일 목록용)</label>
                                 <input type="color" id="inputStripeColor" value="#000000" class="w-full h-7 rounded border border-slate-200 cursor-pointer">
                             </div>
                         </div>
 
-                        <!-- Added Pattern Gap (Spacing) Slider -->
                         <div class="pt-1">
                             <div class="flex justify-between text-[10px] text-slate-600 mb-0.5">
-                                <span>빗금(사선) 간격</span>
+                                <span>색상 띠 / 간격</span>
                                 <span id="valPatternGap">8px</span>
                             </div>
                             <input type="range" id="inputPatternGap" min="4" max="24" step="1" value="8" class="w-full accent-indigo-600">
@@ -205,12 +597,13 @@
                         </div>
 
                         <div class="space-y-2 pt-2 border-t border-slate-100">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-medium text-slate-700">입력된 지명만 라벨 표시</span>
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" id="toggleLabels" class="sr-only peer" checked>
-                                    <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
-                                </label>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">지명 라벨 표시 방식</label>
+                                <select id="selectLabelDisplayMode" class="w-full text-xs bg-white border border-slate-200 rounded px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-medium">
+                                    <option value="list-only">목록에 있는 지명만 표시</option>
+                                    <option value="all">전체 지명 표시</option>
+                                    <option value="none">안 보임 (숨김)</option>
+                                </select>
                             </div>
 
                             <div>
@@ -224,174 +617,1378 @@
                     </div>
                 </div>
 
-                <!-- Tab Content 2: Batch List Import -->
+                <!-- Tab Content 2: Combined Batch & Numeric List Import -->
                 <div id="tabBatchContent" class="space-y-4 hidden">
                     <div class="bg-indigo-50/70 p-3 rounded-lg border border-indigo-100 text-xs text-indigo-900 space-y-1">
-                        <p class="font-bold flex items-center gap-1"><i data-lucide="layers" class="w-3.5 h-3.5"></i> 다중 지명 목록 및 색상 지정</p>
-                        <p class="text-indigo-700 leading-relaxed">여러 개의 지명 목록을 각각 다른 색상 및 다국어 라벨로 한꺼번에 등록할 수 있습니다.</p>
+                        <p class="font-bold flex items-center gap-1"><i data-lucide="layers" class="w-3.5 h-3.5"></i> 다중 목록 입력 (일반 색상 & 수치 통합)</p>
+                        <p class="text-indigo-700 leading-relaxed">각 목록마다 '일반 색상' 또는 '수치 그라데이션' 유형과 표기 옵션을 지정할 수 있습니다.</p>
                     </div>
 
-                    <!-- Multi-list items container -->
-                    <div id="batchListGroupContainer" class="space-y-3">
-                        <!-- Dynamic Batch Items will be rendered here -->
-                    </div>
+                    <!-- Dynamic Unified Groups Container -->
+                    <div id="batchGroupsContainer" class="space-y-4"></div>
 
-                    <button id="btnAddBatchGroup" class="w-full py-2 px-3 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 border border-dashed border-indigo-300 rounded-lg transition flex items-center justify-center gap-1.5">
+                    <button id="btnAddBatchGroup" class="w-full py-2 px-3 text-xs font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 border border-dashed border-indigo-300 rounded-lg transition flex items-center justify-center gap-1.5">
                         <i data-lucide="plus" class="w-3.5 h-3.5"></i> 새 목록 추가하기
                     </button>
 
-                    <div class="flex gap-2 pt-2 border-t border-slate-200">
-                        <button id="btnApplyBatchList" class="flex-1 py-2 px-3 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition flex items-center justify-center gap-1.5">
-                            <i data-lucide="check" class="w-3.5 h-3.5"></i> 모든 목록 일괄 적용
-                        </button>
-                        <button id="btnClearBatchInput" class="py-2 px-3 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition">
-                            전체 리셋
+                    <div class="pt-2 border-t border-slate-200">
+                        <button id="btnApplyAllBatchGroups" class="w-full py-2.5 px-3 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition flex items-center justify-center gap-1.5">
+                            <i data-lucide="check-circle" class="w-4 h-4"></i> 모든 목록 일괄 적용
                         </button>
                     </div>
-
-                    <div id="batchResultStatus" class="text-xs text-slate-500 font-medium hidden p-2.5 bg-slate-100 rounded-lg"></div>
                 </div>
 
                 <!-- Tab Content 3: Data Explorer & Search -->
                 <div id="tabDataContent" class="space-y-4 hidden">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">향진시 검색</label>
-                        <div class="relative">
-                            <input type="text" id="searchInput" placeholder="예: 타이베이, 信義區..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                            <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
-                        </div>
+                    <div class="relative">
+                        <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-slate-400"></i>
+                        <input type="text" id="searchRegionInput" placeholder="향진시/카운티 검색..." class="w-full pl-9 pr-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
                     </div>
-
-                    <!-- Region Tree List -->
-                    <div id="regionList" class="space-y-1 max-h-[420px] overflow-y-auto pr-1">
-                        <!-- JS rendered list of counties and townships -->
-                    </div>
+                    <div id="regionTreeList" class="space-y-1 max-h-[500px] overflow-y-auto"></div>
                 </div>
+
             </div>
         </aside>
 
-        <!-- Center: Interactive SVG Map Container -->
-        <main class="flex-1 relative map-container overflow-hidden flex items-center justify-center bg-slate-100" id="mapMain">
-            <!-- Loading Indicator -->
-            <div id="loadingSpinner" class="absolute z-20 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm inset-0">
-                <div class="w-10 h-10 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mb-3"></div>
-                <p class="text-sm font-semibold text-slate-700">대만 향진시 지도 데이터 로딩 중...</p>
-                <p class="text-xs text-slate-400 mt-1">외부 TopoJSON API 연결 중입니다.</p>
-            </div>
-
-            <!-- Floating Controls (Zoom) -->
-            <div class="absolute bottom-6 right-6 z-10 flex flex-col gap-2 bg-white p-1.5 rounded-lg shadow-md border border-slate-200">
-                <button id="btnZoomIn" class="p-2 text-slate-600 hover:bg-slate-100 rounded transition" title="확대">
-                    <i data-lucide="plus" class="w-4 h-4"></i>
-                </button>
-                <button id="btnZoomOut" class="p-2 text-slate-600 hover:bg-slate-100 rounded transition" title="축소">
-                    <i data-lucide="minus" class="w-4 h-4"></i>
-                </button>
-            </div>
-
-            <!-- Map Hover Tooltip -->
-            <div id="mapTooltip" class="absolute z-30 pointer-events-none hidden bg-slate-900/90 text-white text-xs px-2.5 py-1.5 rounded-md shadow-lg backdrop-blur-sm border border-slate-700 transition-opacity duration-150">
-                <div font-semibold id="tooltipTitle"></div>
-                <div class="text-[10px] text-slate-300 mt-0.5" id="tooltipSub"></div>
-            </div>
-
-            <!-- Legend/Title Overlay on Map -->
-            <div class="absolute top-6 left-6 z-10 bg-white/90 backdrop-blur-md p-4 rounded-xl shadow-sm border border-slate-200/80 max-w-xs">
-                <input type="text" id="mapTitleInput" value="대만 향진시 구분도" class="text-base font-bold text-slate-900 bg-transparent border-b border-transparent hover:border-slate-300 focus:border-indigo-500 focus:outline-none w-full">
-                <input type="text" id="mapSubtitleInput" value="Taiwan Township Administrative Map" class="text-xs text-slate-500 bg-transparent border-b border-transparent hover:border-slate-300 focus:border-indigo-500 focus:outline-none w-full mt-0.5">
-            </div>
-
-            <!-- Interactive SVG Map -->
-            <svg id="svgMap" class="w-full h-full cursor-grab active:cursor-grabbing"></svg>
+        <!-- Main Interactive Map Canvas View -->
+        <main class="flex-1 relative map-container overflow-hidden" id="mapMain">
+            <!-- D3 SVG map renders here -->
         </main>
     </div>
 
     <!-- JavaScript Application Logic -->
     <script>
-        // Data Sources (Taiwan TopoJSON with Township Boundaries)
         const GEO_DATA_URL = 'https://cdn.jsdelivr.net/npm/taiwan-atlas@1/towns-10t.json';
 
-        // Predefined Palette Colors
         const PALETTE_COLORS = [
             '#ffffff', '#f8fafc', '#cbd5e1', '#94a3b8', '#64748b', '#334155',
             '#ef4444', '#f97316', '#f59e0b', '#10b981', '#06b6d4', '#3b82f6',
             '#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#a855f7', '#14b8a6'
         ];
 
-        // Saved / Used Colors Set
         const savedColorsSet = new Set(['#3b82f6', '#ef4444', '#10b981']);
 
-        // State Management
         let mapData = null;
         let selectedFeature = null;
-        const colorMap = new Map(); // Store color/pattern string by ID
-        const customLabelMap = new Map(); // Store custom display names by ID
+        const colorMap = new Map();
+        const customLabelMap = new Map();
         let currentFillColor = '#3b82f6';
         let currentStripeColor = '#000000';
-        let currentPatternType = 'solid'; // 'solid', 'stripe-right', 'stripe-left', 'grid'
-        let currentPatternGap = 8; // Default pattern spacing in px
-        let showLabels = true;
+        let currentPatternType = 'solid';
+        let currentPatternGap = 8;
+        let labelDisplayMode = 'list-only';
         let labelFontSize = 3.5;
         let currentZoomScale = 1;
 
-        // Triple Click Tracker State
-        let clickTracker = {
-            lastId: null,
-            count: 0,
-            timer: null
-        };
+        let numericValuesMap = new Map();
+        let numericPercentagesMap = new Map();
+        let numericDisplayConfigMap = new Map(); // Stores { showVal: bool, isPct: bool } per feature ID
 
-        // Batch Groups State
+        let clickTracker = { lastId: null, count: 0, timer: null };
+
         let batchGroups = [
             {
                 id: 1,
-                name: '직할시 정부',
-                color: '#f43f5e',
-                stripeColor: '#000000',
-                pattern: 'solid',
-                text: '信義區 = 신의구\n板橋區 = 판교구\n桃園區 = 도원구\n西屯區 = 셔둔구\n安平區 = 안평구\n苓雅區 = 령아구'
+                active: true,
+                name: '특별 관리 구역 (사선)',
+                mode: 'color',
+                color: '#ffffff',
+                stripeColor: '#ef4444',
+                pattern: 'stripe-right',
+                patternGap: 8,
+                minVal: 0,
+                maxVal: 100,
+                minColor: '#e0f2fe',
+                maxColor: '#1d4ed8',
+                showValue: true,
+                calcPercentage: false,
+                text: '信義區\n板橋區\n桃園區\n西屯區\n安平區\n苓雅區\n豐原區\n新營區\n鳳山區\n竹北市\n苗栗市\n彰化市\n南投市\n斗六市\n太保市\n屏東市\n宜蘭市\n花蓮市\n臺東市\n馬公市\n金城鎮\n南竿鄉'
             },
             {
                 id: 2,
-                name: '현 정부',
-                color: '#10b981',
+                active: true,
+                name: '객가 문화 거점 발전 구역',
+                mode: 'numeric',
+                color: '#f43f5e',
                 stripeColor: '#000000',
                 pattern: 'solid',
-                text: '豐原區 = 풍원구\n新營區 = 신영구\n鳳山區 = 봉산구\n竹北市 = 듁븍시\n苗栗市 = 묘률시\n彰化市 = 챵화시\n南投市 = 남투시\n斗六市 = 두륙시\n太保市 = 태보시\n屏東市 = 병동시\n宜蘭市 = 의란시\n花蓮市 = 화련시\n臺東市 = ᄃᆡ동시\n馬公市 = 마공시\n金城鎮 = 금셩딘\n南竿鄉 = 남간향'
-            },
-            {
-                id: 3,
-                name: '성할시 정부',
-                color: '#94a3b8',
-                stripeColor: '#000000',
-                pattern: 'stripe-right',
-                text: '中正區 = 듕졍구\n北區 = 븍구\n東區 = 동구'
+                patternGap: 8,
+                minVal: 0,
+                maxVal: 100,
+                minColor: '#fff1f2',
+                maxColor: '#be123c',
+                showValue: true,
+                calcPercentage: false,
+                text: '新屋區 = 77\n楊梅區 = 68\n平鎮區 = 50\n龍潭區 = 59\n中壢區 = 57\n觀音區 = 48\n大溪區 = 34\n大園區* = 26\n橫山鄉 = 94\n北埔鄉 = 93\n關西鎮 = 92\n竹東鎮 = 90\n峨眉鄉 = 89\n新埔鎮 = 88\n芎林鄉 = 88\n寶山鄉 = 82\n湖口鄉 = 81\n新豐鄉 = 69\n竹北市 = 55\n東　區 = 37\n香山區* = 27\n公館鄉 = 91\n頭屋鄉 = 89\n三灣鄉 = 88\n大湖鄉 = 88\n銅鑼鄉 = 87\n苗栗市 = 87\n南庄鄉 = 82\n三義鄉 = 81\n獅潭鄉 = 79\n卓蘭鎮 = 79\n頭份市 = 78\n造橋鄉 = 77\n西湖鄉 = 76\n泰安鄉 = 41\n竹南鎮 = 38\n通霄鎮 = 33\n苑裡鎮* = 30\n後龍鎮* = 29\n東勢區 = 77\n石岡區 = 46\n新社區 = 45\n和平區 = 34\n豐原區* = 27\n國姓鄉 = 58\n中寮鄉 = 40\n水里鄉* = 27\n崙背鄉 = 39\n二崙鄉 = 30\n西螺鎮 = 25\n美濃區 = 87\n杉林區 = 51\n六龜區 = 44\n甲仙區* = 28\n竹田鄉 = 71\n麟洛鄉 = 68\n內埔鄉 = 61\n新埤鄉 = 54\n萬巒鄉 = 49\n長治鄉 = 43\n高樹鄉 = 42\n佳冬鄉 = 41\n池上鄉 = 43\n關山鎮 = 41\n鹿野鄉 = 33\n鳳林鎮 = 66\n富里鄉 = 50\n瑞穗鄉 = 42\n玉里鎮 = 39\n壽豐鄉 = 34\n吉安鄉 = 33\n花蓮市* = 32\n光復鄉* = 30'
             }
         ];
 
-        // D3 Map References
+        // Synced from the textarea (full mapping in the HTML) on every apply
+        let bulkCustomLabelText = '';
+
         let svg, g, zoom, path, projection;
 
-        // Initialization
-        window.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons();
-            initPaletteUI();
-            renderSavedColorsUI();
-            initTabs();
-            initD3Map();
-            loadTaiwanData();
-            renderBatchGroupsUI();
-            setupEventListeners();
-        });
-
-        // Add to Saved Colors
-        function saveColor(color) {
-            if (!color || color === 'transparent') return;
-            savedColorsSet.add(color.toLowerCase());
-            renderSavedColorsUI();
+        function getFeatureId(f) {
+            return f.properties.TOWNCODE || f.properties.TOWNID || f.id || (f.properties.COUNTYNAME + '_' + f.properties.TOWNNAME);
+        }
+        function getTownName(f) {
+            return f.properties.TOWNNAME || f.properties.name || '';
+        }
+        function getCountyName(f) {
+            return f.properties.COUNTYNAME || '';
         }
 
-        // Render Saved / History Colors
+        // 臺→台 정규화 + 전각공백/별표 등 정리
+        // 예: "後龍鎮*", "東　區", "臺北市" 모두 매칭
+        function normalizeTaiwanChar(str) {
+            if (!str) return '';
+            return String(str).replace(/臺/g, '台');
+        }
+
+        function cleanPlaceKey(key) {
+            if (!key) return '';
+            let s = String(key).trim();
+            s = s.replace(/\u3000/g, ' ').replace(/\s+/g, ' ').trim(); // 전각공백→반각
+            s = s.replace(/[*＊#＃]+$/g, '').trim(); // 끝 별표 등 제거
+            s = s.replace(/^["'「『]+|["'」』]+$/g, '').trim(); // 따옴표 제거
+            return s;
+        }
+
+        // Helper to match town name key flexibly
+        function matchTownFeatures(key) {
+            if (!mapData || !key) return [];
+            const cleaned = cleanPlaceKey(key);
+            if (!cleaned) return [];
+            const normKey = normalizeTaiwanChar(cleaned);
+            const normKeyNoSpace = normKey.replace(/\s+/g, '');
+
+            return mapData.filter(f => {
+                const town = getTownName(f);
+                const county = getCountyName(f);
+                const normTown = normalizeTaiwanChar(town);
+                const normCounty = normalizeTaiwanChar(county);
+                const fullComboSpace = `${county} ${town}`;
+                const fullComboNoSpace = `${county}${town}`;
+                const normFullSpace = `${normCounty} ${normTown}`;
+                const normFullNoSpace = `${normCounty}${normTown}`;
+                const id = getFeatureId(f);
+
+                return town === cleaned ||
+                       county === cleaned ||
+                       fullComboSpace === cleaned ||
+                       fullComboNoSpace === cleaned ||
+                       id === cleaned ||
+                       normTown === normKey ||
+                       normCounty === normKey ||
+                       normFullSpace === normKey ||
+                       normFullNoSpace === normKey ||
+                       normTown === normKeyNoSpace ||
+                       normCounty === normKeyNoSpace ||
+                       normFullNoSpace === normKeyNoSpace ||
+                       (normKey.includes(normTown) && normKey.includes(normCounty)) ||
+                       (normKeyNoSpace.includes(normTown) && normKeyNoSpace.includes(normCounty));
+            });
+        }
+
+        function applyBulkCustomLabelMap() {
+            customLabelMap.clear();
+            // 항상 textarea 현재 값을 읽어서 적용 (HTML에 있는 전체 목록 반영)
+            const textEl = document.getElementById('bulkCustomLabelText');
+            const sourceText = (textEl && typeof textEl.value === 'string') ? textEl.value : (bulkCustomLabelText || '');
+            if (sourceText) {
+                bulkCustomLabelText = sourceText;
+                const lines = sourceText.split('\n');
+                lines.forEach(line => {
+                    const trimmed = line.trim();
+                    if (!trimmed || !trimmed.includes('=')) return;
+                    const parts = trimmed.split('=');
+                    const key = parts[0].trim();
+                    const val = parts.slice(1).join('=').trim();
+                    if (!key || !val) return;
+
+                    const matches = matchTownFeatures(key);
+                    matches.forEach(f => {
+                        customLabelMap.set(getFeatureId(f), val);
+                    });
+                });
+            }
+            if (mapData) updateLabels();
+        }
+
+        function populateRegionList() {
+            const container = document.getElementById('regionTreeList');
+            if (!container || !mapData) return;
+            container.innerHTML = '';
+
+            const countyMap = new Map();
+            mapData.forEach(f => {
+                const county = getCountyName(f) || '기타';
+                if (!countyMap.has(county)) countyMap.set(county, []);
+                countyMap.get(county).push(f);
+            });
+
+            countyMap.forEach((towns, county) => {
+                const groupEl = document.createElement('div');
+                groupEl.className = 'border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm';
+
+                const header = document.createElement('div');
+                header.className = 'px-3 py-2 bg-slate-100 text-xs font-bold text-slate-700 flex justify-between items-center cursor-pointer hover:bg-slate-200 transition';
+                header.innerHTML = `<span>${county} (${towns.length})</span><i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>`;
+
+                const body = document.createElement('div');
+                body.className = 'p-2 grid grid-cols-2 gap-1 bg-white border-t border-slate-100';
+
+                towns.forEach(t => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'btn-select-town text-left px-2 py-1 text-[11px] rounded hover:bg-indigo-50 hover:text-indigo-600 transition truncate text-slate-600';
+                    btn.textContent = getTownName(t);
+                    btn.addEventListener('click', () => {
+                        selectedFeature = t;
+                        updateSelectedRegionInfo(t);
+                        applyColorToSelection();
+                    });
+                    body.appendChild(btn);
+                });
+
+                header.addEventListener('click', () => {
+                    body.classList.toggle('hidden');
+                });
+
+                groupEl.appendChild(header);
+                groupEl.appendChild(body);
+                container.appendChild(groupEl);
+            });
+
+            lucide.createIcons();
+        }
+
+        function applyAllBatchGroups() {
+            applyBulkCustomLabelMap();
+            applyAllDataCombined();
+        }
+
+        function initD3Map() {
+            const container = document.getElementById('mapMain');
+            const width = container.clientWidth || 800;
+            const height = container.clientHeight || 600;
+
+            projection = d3.geoMercator()
+                .center([120.97, 23.97])
+                .scale(width * 11)
+                .translate([width / 2, height / 2]);
+
+            path = d3.geoPath().projection(projection);
+
+            d3.select('#mapMain').selectAll('svg').remove();
+
+            svg = d3.select('#mapMain')
+                .append('svg')
+                .attr('width', '100%')
+                .attr('height', '100%')
+                .attr('viewBox', `0 0 ${width} ${height}`)
+                .attr('class', 'select-none');
+
+            svg.append('defs');
+
+            // Expand ocean background rect bounds significantly to prevent white/transparent patches on pan & zoom
+            svg.append('rect')
+                .attr('id', 'mapBackground')
+                .attr('x', -width * 10)
+                .attr('y', -height * 10)
+                .attr('width', width * 20)
+                .attr('height', height * 20)
+                .attr('fill', document.getElementById('inputBgColor')?.value || '#e0f2fe');
+
+            g = svg.append('g').attr('id', 'mapViewport');
+
+            zoom = d3.zoom()
+                .scaleExtent([0.8, 30])
+                .translateExtent([[-width * 0.5, -height * 0.5], [width * 1.5, height * 1.5]])
+                .on('zoom', (event) => {
+                    g.attr('transform', event.transform);
+                    currentZoomScale = event.transform.k;
+                    updateLabelFontScales();
+                });
+
+            svg.call(zoom);
+
+            d3.select('body').selectAll('.map-tooltip').remove();
+            d3.select('body').append('div')
+                .attr('class', 'map-tooltip fixed pointer-events-none hidden bg-slate-900/90 text-white text-xs px-2.5 py-1.5 rounded shadow-lg z-50 backdrop-blur-sm border border-slate-700/50');
+        }
+
+        async function loadTaiwanData() {
+            try {
+                const response = await fetch(GEO_DATA_URL);
+                if (!response.ok) throw new Error('Network response failed');
+                const topoData = await response.json();
+                
+                const objects = topoData.objects;
+                const townKey = Object.keys(objects).find(k => k.includes('town') || k.includes('Town') || k.includes('TOWN')) || Object.keys(objects)[0];
+                mapData = topojson.feature(topoData, objects[townKey]).features;
+
+                renderMap(mapData);
+                populateRegionList();
+                applyAllBatchGroups();
+            } catch (error) {
+                console.error('Failed to load map data:', error);
+                document.getElementById('mapMain').innerHTML = `
+                    <div class="flex items-center justify-center h-full text-red-500 gap-2">
+                        <i data-lucide="alert-circle"></i>
+                        <span>지도 데이터를 불러오는데 실패했습니다.</span>
+                    </div>
+                `;
+                lucide.createIcons();
+            }
+        }
+
+        function getOrCreatePattern(svgObj, bgColor, patternType, stripeColor, customGap = currentPatternGap) {
+            if (!patternType || patternType === 'solid') return bgColor;
+
+            const gap = customGap || currentPatternGap;
+            const safeBg = (bgColor || '#ffffff').replace(/[\s(),]/g, '_');
+            const safeStripe = (stripeColor || '#000000').replace(/[\s(),]/g, '_');
+            const patternId = `pat_${safeBg}_${safeStripe}_${patternType}_${gap}`;
+            let defs = svgObj.select('defs');
+
+            if (defs.select(`#${CSS.escape(patternId)}`).empty()) {
+                const pattern = defs.append('pattern')
+                    .attr('id', patternId)
+                    .attr('patternUnits', 'userSpaceOnUse')
+                    .attr('width', gap)
+                    .attr('height', gap);
+
+                pattern.append('rect')
+                    .attr('width', gap)
+                    .attr('height', gap)
+                    .attr('fill', bgColor);
+
+                // 왼쪽 사선 (/) , 오른쪽 사선 (\)
+                if (patternType === 'stripe-left') {
+                    pattern.append('path')
+                        .attr('d', `M0,${gap} L${gap},0 M-1,1 L1,-1 M${gap-1},${gap+1} L${gap+1},${gap-1}`)
+                        .attr('stroke', stripeColor)
+                        .attr('stroke-width', 1.2);
+                } else if (patternType === 'stripe-right') {
+                    pattern.append('path')
+                        .attr('d', `M0,0 L${gap},${gap} M-1,${gap-1} L1,${gap+1} M${gap-1},-1 L${gap+1},1`)
+                        .attr('stroke', stripeColor)
+                        .attr('stroke-width', 1.2);
+                } else if (patternType === 'grid') {
+                    pattern.append('path')
+                        .attr('d', `M0,${gap/2} L${gap},${gap/2} M${gap/2},0 L${gap/2},${gap}`)
+                        .attr('stroke', stripeColor)
+                        .attr('stroke-width', 1);
+                }
+            }
+
+            return `url(#${patternId})`;
+        }
+
+        function getOrCreateMultiStripePattern(svgObj, colorEntries, customGap = currentPatternGap) {
+            if (!colorEntries || colorEntries.length === 0) return '#ffffff';
+            if (colorEntries.length === 1) {
+                const entry = colorEntries[0];
+                return typeof entry === 'object' && entry.patternVal ? entry.patternVal : (entry.rawColor || entry);
+            }
+
+            // 여러 목록의 색상들로 패턴을 구성한다.
+            // 전역 「패턴 & 사선 설정」의 패턴 종류(/ \ 격자)와 간격이
+            // 이 색상들을 어떻게 배열할지를 결정한다. (별도의 검은 사선을 그리는 것이 아님)
+            const colors = colorEntries.map(e => e.rawColor || '#ffffff');
+            const n = colors.length;
+            const gap = customGap || currentPatternGap || 8;
+            const patType = currentPatternType || 'solid';
+
+            const idComponents = colors.map(c => (c || '').replace(/[\s(),]/g, '_')).join('__');
+            const patternId = `multi_color_${patType}_${gap}_${idComponents}`;
+            let defs = svgObj.select('defs');
+
+            if (defs.select(`#${CSS.escape(patternId)}`).empty()) {
+                const pattern = defs.append('pattern')
+                    .attr('id', patternId)
+                    .attr('patternUnits', 'userSpaceOnUse');
+
+                if (patType === 'solid') {
+                    // 세로 색상 띠
+                    pattern.attr('width', gap * n).attr('height', gap);
+                    colors.forEach((bgColor, idx) => {
+                        pattern.append('rect')
+                            .attr('x', idx * gap)
+                            .attr('y', 0)
+                            .attr('width', gap)
+                            .attr('height', gap)
+                            .attr('fill', bgColor);
+                    });
+                } else if (patType === 'stripe-right' || patType === 'stripe-left') {
+                    // 대각선 방향으로 색상 띠 배치
+                    // 왼쪽 사선 (/) = rotate(-45), 오른쪽 사선 (\) = rotate(45)
+                    const tile = gap * n;
+                    pattern.attr('width', tile).attr('height', tile);
+                    if (patType === 'stripe-left') {
+                        pattern.attr('patternTransform', 'rotate(-45)');
+                    } else {
+                        pattern.attr('patternTransform', 'rotate(45)');
+                    }
+                    colors.forEach((bgColor, idx) => {
+                        pattern.append('rect')
+                            .attr('x', idx * gap)
+                            .attr('y', 0)
+                            .attr('width', gap)
+                            .attr('height', tile)
+                            .attr('fill', bgColor);
+                    });
+                } else if (patType === 'grid') {
+                    // 격자(체크무늬): 가로·세로로 색상을 교차 배치
+                    const cell = gap;
+                    pattern.attr('width', cell * n).attr('height', cell * n);
+                    for (let row = 0; row < n; row++) {
+                        for (let col = 0; col < n; col++) {
+                            const colorIdx = (row + col) % n;
+                            pattern.append('rect')
+                                .attr('x', col * cell)
+                                .attr('y', row * cell)
+                                .attr('width', cell)
+                                .attr('height', cell)
+                                .attr('fill', colors[colorIdx]);
+                        }
+                    }
+                } else {
+                    // fallback: 세로 띠
+                    pattern.attr('width', gap * n).attr('height', gap);
+                    colors.forEach((bgColor, idx) => {
+                        pattern.append('rect')
+                            .attr('x', idx * gap)
+                            .attr('y', 0)
+                            .attr('width', gap)
+                            .attr('height', gap)
+                            .attr('fill', bgColor);
+                    });
+                }
+            }
+
+            return `url(#${patternId})`;
+        }
+
+        function renderMap(features) {
+            if (!features) return;
+
+            g.selectAll('*').remove();
+
+            const pathsGroup = g.append('g').attr('id', 'pathsGroup');
+            
+            const strokeColor = document.getElementById('inputStrokeColor').value || '#cbd5e1';
+            const strokeWidth = document.getElementById('inputStrokeWidth').value || 0.5;
+
+            pathsGroup.selectAll('path')
+                .data(features)
+                .enter()
+                .append('path')
+                .attr('class', 'township-path')
+                .attr('d', path)
+                .attr('fill', d => {
+                    const id = getFeatureId(d);
+                    return colorMap.get(id) || '#ffffff';
+                })
+                .attr('stroke', strokeColor)
+                .attr('stroke-width', strokeWidth)
+                .on('mousemove', (event, d) => {
+                    const town = getTownName(d);
+                    const county = getCountyName(d);
+                    const id = getFeatureId(d);
+                    const customLabel = customLabelMap.get(id);
+                    const numVal = numericValuesMap.get(id);
+
+                    let tooltipHtml = `<div class="font-bold">${county} ${town}</div>`;
+                    if (customLabel) tooltipHtml += `<div class="text-indigo-300">라벨: ${customLabel}</div>`;
+                    if (numVal !== undefined) tooltipHtml += `<div class="text-amber-300">수치: ${numVal}</div>`;
+
+                    const tooltip = d3.select('.map-tooltip');
+                    tooltip.html(tooltipHtml)
+                        .style('left', (event.clientX + 12) + 'px')
+                        .style('top', (event.clientY + 12) + 'px');
+                    tooltip.node().classList.remove('hidden');
+                })
+                .on('mouseleave', () => {
+                    const tooltip = d3.select('.map-tooltip');
+                    if (!tooltip.empty()) tooltip.node().classList.add('hidden');
+                })
+                .on('click', (event, d) => {
+                    handleTripleClick(d);
+                });
+
+            g.append('g').attr('id', 'labelsGroup');
+
+            updateLabels();
+            updateLegendOverlay();
+        }
+
+        function handleTripleClick(d) {
+            const id = getFeatureId(d);
+            const now = Date.now();
+
+            if (clickTracker.lastId === id && (now - clickTracker.timer) < 500) {
+                clickTracker.count++;
+            } else {
+                clickTracker.lastId = id;
+                clickTracker.count = 1;
+            }
+            clickTracker.timer = now;
+
+            if (clickTracker.count === 3) {
+                clickTracker.count = 0;
+                selectedFeature = d;
+                
+                if (colorMap.has(id) && colorMap.get(id) !== '#ffffff') {
+                    colorMap.delete(id);
+                    customLabelMap.delete(id);
+                } else {
+                    applyColorToSelection();
+                }
+
+                updateSelectedRegionInfo(d);
+                if (mapData) renderMap(mapData);
+            } else {
+                selectedFeature = d;
+                updateSelectedRegionInfo(d);
+            }
+        }
+
+        function updateSelectedRegionInfo(d) {
+            const id = getFeatureId(d);
+            const town = getTownName(d);
+            const county = getCountyName(d);
+
+            document.getElementById('selectedRegionName').textContent = town || '선택된 향진';
+            document.getElementById('selectedRegionDetail').textContent = `${county} (${id})`;
+            document.getElementById('customLabelInput').value = customLabelMap.get(id) || '';
+        }
+
+        function applyColorToSelection() {
+            if (!selectedFeature) return;
+            const id = getFeatureId(selectedFeature);
+
+            const patternVal = getOrCreatePattern(svg, currentFillColor, currentPatternType, currentStripeColor);
+            colorMap.set(id, patternVal);
+
+            const customLabel = document.getElementById('customLabelInput').value.trim();
+            if (customLabel) {
+                customLabelMap.set(id, customLabel);
+            }
+
+            if (mapData) renderMap(mapData);
+        }
+
+        function fillCountyWithColor() {
+            if (!selectedFeature || !mapData) return;
+
+            const targetCounty = getCountyName(selectedFeature);
+            if (!targetCounty) return;
+
+            const patternVal = getOrCreatePattern(svg, currentFillColor, currentPatternType, currentStripeColor);
+
+            mapData.filter(f => getCountyName(f) === targetCounty).forEach(f => {
+                const id = getFeatureId(f);
+                colorMap.set(id, patternVal);
+            });
+
+            renderMap(mapData);
+        }
+
+        function updateLabels() {
+            if (!g) return;
+            const labelsGroup = g.select('#labelsGroup');
+            labelsGroup.selectAll('*').remove();
+
+            if (!mapData) return;
+
+            // Collect all unique town keys present in active batch groups strictly
+            const activeGroupTownKeys = new Set();
+            batchGroups.forEach(grp => {
+                if (grp.active !== false && grp.text) {
+                    grp.text.split('\n').forEach(line => {
+                        let trimmed = line.trim();
+                        if (!trimmed) return;
+                        if (trimmed.includes('=')) trimmed = trimmed.split('=')[0].trim();
+                        if (trimmed) {
+                            const matches = matchTownFeatures(trimmed);
+                            matches.forEach(m => {
+                                activeGroupTownKeys.add(getTownName(m));
+                                activeGroupTownKeys.add(getFeatureId(m));
+                            });
+                        }
+                    });
+                }
+            });
+
+            mapData.forEach(f => {
+                const id = getFeatureId(f);
+                const townName = getTownName(f);
+                const centroid = path.centroid(f);
+                if (isNaN(centroid[0]) || isNaN(centroid[1])) return;
+
+                // Check town name visibility rule strictly
+                let showTownName = false;
+                if (labelDisplayMode === 'all') {
+                    showTownName = true;
+                } else if (labelDisplayMode === 'list-only') {
+                    showTownName = activeGroupTownKeys.has(townName) || activeGroupTownKeys.has(id);
+                } else if (labelDisplayMode === 'none') {
+                    showTownName = false;
+                }
+
+                // Check numeric value visibility rule independently
+                const displayCfg = numericDisplayConfigMap.get(id);
+                const showNumericVal = displayCfg && displayCfg.showVal && numericValuesMap.has(id);
+
+                // CRITICAL FIX: Only skip if NEITHER town name NOR numeric value should be shown
+                if (!showTownName && !showNumericVal) return;
+
+                const customLabel = customLabelMap.get(id);
+                let labelText = '';
+
+                // Add town name only if town name display is enabled
+                if (showTownName) {
+                    labelText = customLabel || townName;
+                }
+
+                // Append or independently display numeric value if numeric display is enabled
+                if (showNumericVal) {
+                    const numStr = numericValuesMap.get(id);
+                    if (labelText) {
+                        labelText += ` (${numStr})`;
+                    } else {
+                        labelText = `${numStr}`;
+                    }
+                }
+
+                // Render text if labelText is constructed
+                if (labelText) {
+                    labelsGroup.append('text')
+                        .attr('x', centroid[0])
+                        .attr('y', centroid[1])
+                        .attr('text-anchor', 'middle')
+                        .attr('dominant-baseline', 'central')
+                        .attr('font-size', `${labelFontSize / currentZoomScale}px`)
+                        .attr('font-weight', '600')
+                        .attr('fill', '#0f172a')
+                        .attr('stroke', '#ffffff')
+                        .attr('stroke-width', `${(labelFontSize * 0.25) / currentZoomScale}px`)
+                        .attr('paint-order', 'stroke fill')
+                        .attr('class', 'pointer-events-none select-none')
+                        .text(labelText);
+                }
+            });
+        }
+
+        function applyAllDataCombined() {
+            colorMap.clear();
+            numericValuesMap.clear();
+            numericPercentagesMap.clear();
+            numericDisplayConfigMap.clear();
+
+            const featureNumericDisplaysMap = new Map();
+            const featureColorsMap = new Map();
+            const featureShowValueMap = new Map();
+
+            const activeBatchGroups = batchGroups.filter(g => g.active !== false);
+
+            // 1. Numeric Mode Pass
+            activeBatchGroups.forEach(grp => {
+                if (grp.mode !== 'numeric' || !grp.text) return;
+                
+                const parsedItems = [];
+                let groupMaxVal = grp.maxVal || 0;
+
+                const lines = grp.text.split('\n');
+                lines.forEach(line => {
+                    const trimmed = line.trim();
+                    if (!trimmed || !trimmed.includes('=')) return;
+
+                    const parts = trimmed.split('=');
+                    const townKey = parts[0].trim();
+                    const val = parseFloat(parts[1].trim());
+                    if (isNaN(val)) return;
+
+                    parsedItems.push({ townKey, val });
+                    if (val > groupMaxVal) groupMaxVal = val;
+                });
+
+                const colorInterpolator = d3.interpolateRgb(grp.minColor || '#e0f2fe', grp.maxColor || '#1d4ed8');
+
+                parsedItems.forEach(item => {
+                    if (!mapData) return;
+                    const matches = matchTownFeatures(item.townKey);
+                    
+                    matches.forEach(f => {
+                        const id = getFeatureId(f);
+                        
+                        let formattedValueStr = `${item.val}`;
+                        if (grp.calcPercentage && groupMaxVal > 0) {
+                            const pct = ((item.val / groupMaxVal) * 100).toFixed(1);
+                            formattedValueStr = `${pct}%`;
+                        }
+
+                        if (!featureNumericDisplaysMap.has(id)) featureNumericDisplaysMap.set(id, []);
+                        
+                        if (grp.showValue !== false) {
+                            featureNumericDisplaysMap.get(id).push(formattedValueStr);
+                            featureShowValueMap.set(id, true);
+                        }
+
+                        let targetColor = grp.color || '#3b82f6';
+                        if (grp.numColorMode !== 'fixed') {
+                            let norm = (item.val - (grp.minVal || 0)) / ((grp.maxVal || groupMaxVal) - (grp.minVal || 0) || 1);
+                            norm = Math.max(0, Math.min(1, norm));
+                            targetColor = colorInterpolator(norm);
+                        }
+
+                        if (targetColor !== 'transparent') {
+                            if (!featureColorsMap.has(id)) featureColorsMap.set(id, []);
+                            featureColorsMap.get(id).push({
+                                rawColor: targetColor,
+                                patternType: grp.pattern || 'solid',
+                                stripeColor: grp.stripeColor || '#000000',
+                                patternGap: grp.patternGap || 8
+                            });
+                        }
+                    });
+                });
+            });
+
+            // 2. Color Mode Pass (Standard Color Lists)
+            activeBatchGroups.forEach(grp => {
+                if (grp.mode === 'numeric' || !grp.text) return;
+                
+                const lines = grp.text.split('\n');
+                lines.forEach(line => {
+                    let townKey = line.trim();
+                    if (!townKey) return;
+
+                    if (townKey.includes('=')) {
+                        townKey = townKey.split('=')[0].trim();
+                    }
+                    if (!townKey) return;
+
+                    if (!mapData) return;
+                    const matches = matchTownFeatures(townKey);
+                    matches.forEach(f => {
+                        const id = getFeatureId(f);
+                        if (grp.color !== 'transparent') {
+                            if (!featureColorsMap.has(id)) featureColorsMap.set(id, []);
+                            
+                            const pat = getOrCreatePattern(svg, grp.color, grp.pattern, grp.stripeColor, grp.patternGap);
+                            featureColorsMap.get(id).push({
+                                rawColor: grp.color,
+                                patternVal: pat,
+                                patternType: grp.pattern || 'solid',
+                                stripeColor: grp.stripeColor || '#000000',
+                                patternGap: grp.patternGap || 8
+                            });
+                        }
+                    });
+                });
+            });
+
+            // Populate numeric value maps for labels (transfer from temporary maps)
+            featureNumericDisplaysMap.forEach((valArr, id) => {
+                if (valArr && valArr.length > 0) {
+                    // Join multiple numeric values from different groups if present
+                    numericValuesMap.set(id, valArr.join(' / '));
+                    numericDisplayConfigMap.set(id, { showVal: true, isPct: false });
+                }
+            });
+
+            // 3. Final Pattern Assignment
+            featureColorsMap.forEach((colorEntries, id) => {
+                if (colorEntries.length === 1) {
+                    const entry = colorEntries[0];
+                    const patVal = typeof entry === 'object' && entry.patternVal ? entry.patternVal : (entry.rawColor || entry);
+                    colorMap.set(id, patVal);
+                } else if (colorEntries.length > 1) {
+                    // Multi-list membership: 여러 목록의 색상으로 패턴 구성
+                    // 전역 패턴&사선 설정의 간격 사용
+                    const gap = currentPatternGap || Math.max(...colorEntries.map(e => e.patternGap || 8));
+                    const multiStripePat = getOrCreateMultiStripePattern(svg, colorEntries, gap);
+                    colorMap.set(id, multiStripePat);
+                }
+            });
+
+            if (mapData) renderMap(mapData);
+        }
+
+        function updateLegendOverlay() {
+            if (!g) return;
+            g.select('#legendGroup').remove();
+
+            const activeGroups = batchGroups.filter(b => b.active !== false && b.text && b.text.trim().length > 0);
+            if (activeGroups.length === 0) return;
+
+            // Moved legend further down to the bottom-left ocean area
+            const legendG = g.append('g')
+                .attr('id', 'legendGroup')
+                .attr('transform', 'translate(15, 520)');
+
+            const legendBg = legendG.append('rect')
+                .attr('fill', '#ffffff')
+                .attr('stroke', '#cbd5e1')
+                .attr('stroke-width', 1)
+                .attr('rx', 4)
+                .attr('ry', 4)
+                .attr('opacity', 1.0);
+
+            let currentY = 10;
+            let maxWidth = 75;
+
+            legendG.append('text')
+                .attr('x', 8)
+                .attr('y', currentY + 4)
+                .attr('font-size', '8px')
+                .attr('font-weight', '700')
+                .attr('fill', '#0f172a')
+                .text('범례 (Legend)');
+
+            currentY += 14;
+
+            activeGroups.forEach(grp => {
+                let patVal = '#ffffff';
+
+                if (grp.mode === 'color') {
+                    patVal = getOrCreatePattern(svg, grp.color, grp.pattern, grp.stripeColor);
+                } else if (grp.mode === 'numeric') {
+                    patVal = grp.maxColor;
+                }
+
+                legendG.append('rect')
+                    .attr('x', 8)
+                    .attr('y', currentY)
+                    .attr('width', 10)
+                    .attr('height', 9)
+                    .attr('rx', 2)
+                    .attr('fill', patVal)
+                    .attr('stroke', '#cbd5e1')
+                    .attr('stroke-width', 0.5);
+
+                const txt = legendG.append('text')
+                    .attr('x', 23)
+                    .attr('y', currentY + 7)
+                    .attr('font-size', '7.5px')
+                    .attr('font-weight', '500')
+                    .attr('fill', '#334155')
+                    .text(`${grp.name}${grp.mode === 'numeric' ? ' (수치)' : ''}`);
+
+                const textLen = txt.node() ? txt.node().getComputedTextLength() : 35;
+                if (textLen + 30 > maxWidth) maxWidth = textLen + 30;
+
+                currentY += 14;
+            });
+
+            legendBg
+                .attr('width', maxWidth)
+                .attr('height', currentY + 4);
+        }
+
+        function renderBatchGroupsUI() {
+            const container = document.getElementById('batchGroupsContainer');
+            if (!container) return;
+            container.innerHTML = '';
+
+            batchGroups.forEach((grp, idx) => {
+                const card = document.createElement('div');
+                const isActive = grp.active !== false;
+                card.className = `p-3 bg-slate-50 border ${isActive ? 'border-slate-200 shadow-sm' : 'border-slate-300 opacity-60 bg-slate-100'} rounded-lg space-y-2 transition-all relative overflow-hidden`;
+                
+                const isNumeric = grp.mode === 'numeric';
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between gap-1 w-full">
+                        <div class="flex items-center gap-1.5 flex-1 min-w-0">
+                            <label class="flex items-center gap-1 cursor-pointer select-none shrink-0" title="${isActive ? '적용 숨기기 (비활성화)' : '지도에 다시 적용하기'}">
+                                <input type="checkbox" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 grp-active-chk" data-id="${grp.id}" ${isActive ? 'checked' : ''}>
+                                <i data-lucide="${isActive ? 'eye' : 'eye-off'}" class="w-3.5 h-3.5 ${isActive ? 'text-indigo-600' : 'text-slate-400'}"></i>
+                            </label>
+                            <span class="font-bold text-xs text-slate-700 shrink-0">#${idx + 1}</span>
+                            <input type="text" value="${grp.name}" class="text-xs font-semibold bg-transparent border-b border-dashed border-slate-300 focus:outline-none focus:border-indigo-500 flex-1 truncate grp-name-input" data-id="${grp.id}">
+                        </div>
+                        <div class="flex items-center gap-0.5 shrink-0">
+                            <button class="p-1 text-slate-400 hover:text-slate-600 rounded hover:bg-slate-200/50 btn-move-up" data-id="${grp.id}" ${idx === 0 ? 'disabled class="opacity-30 p-1"' : ''} title="위로 이동">
+                                <i data-lucide="arrow-up" class="w-3.5 h-3.5"></i>
+                            </button>
+                            <button class="p-1 text-slate-400 hover:text-slate-600 rounded hover:bg-slate-200/50 btn-move-down" data-id="${grp.id}" ${idx === batchGroups.length - 1 ? 'disabled class="opacity-30 p-1"' : ''} title="아래로 이동">
+                                <i data-lucide="arrow-down" class="w-3.5 h-3.5"></i>
+                            </button>
+                            <button class="p-1 text-red-400 hover:text-red-600 hover:bg-red-50 rounded btn-remove-group" data-id="${grp.id}" title="목록 삭제">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-1 border-t border-slate-200/60">
+                        <label class="flex items-center gap-1.5 cursor-pointer select-none">
+                            <input type="checkbox" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 grp-mode-chk" data-id="${grp.id}" ${isNumeric ? 'checked' : ''}>
+                            <span class="text-xs font-bold ${isNumeric ? 'text-indigo-600' : 'text-slate-600'}">📊 수치 데이터 목록으로 설정</span>
+                        </label>
+                    </div>
+
+                    ${!isNumeric ? `
+                    <div class="space-y-1.5 pt-1">
+                        <!-- Same Intensity / Tone-Matched Colors Quick Palette -->
+                        <div>
+                            <label class="text-[10px] text-slate-500 block mb-1">동일 톤(진함/연함) 색상 테마 빠른 선택</label>
+                            <div class="grid grid-cols-4 gap-1 text-[10px]">
+                                <button type="button" class="btn-preset-color px-1.5 py-1 rounded border border-blue-200 bg-blue-500 text-white font-medium hover:opacity-90 text-center" data-id="${grp.id}" data-color="#3b82f6">Blue</button>
+                                <button type="button" class="btn-preset-color px-1.5 py-1 rounded border border-emerald-200 bg-emerald-500 text-white font-medium hover:opacity-90 text-center" data-id="${grp.id}" data-color="#10b981">Green</button>
+                                <button type="button" class="btn-preset-color px-1.5 py-1 rounded border border-rose-200 bg-rose-500 text-white font-medium hover:opacity-90 text-center" data-id="${grp.id}" data-color="#f43f5e">Red</button>
+                                <button type="button" class="btn-preset-color px-1.5 py-1 rounded border border-purple-200 bg-purple-500 text-white font-medium hover:opacity-90 text-center" data-id="${grp.id}" data-color="#8b5cf6">Purple</button>
+                                <button type="button" class="btn-preset-color px-1.5 py-1 rounded border border-amber-200 bg-amber-500 text-white font-medium hover:opacity-90 text-center" data-id="${grp.id}" data-color="#f59e0b">Amber</button>
+                                <button type="button" class="btn-preset-color px-1.5 py-1 rounded border border-slate-200 bg-slate-600 text-white font-medium hover:opacity-90 text-center" data-id="${grp.id}" data-color="#475569">Slate</button>
+                                <button type="button" class="btn-preset-color px-1.5 py-1 rounded border border-indigo-200 bg-indigo-500 text-white font-medium hover:opacity-90 text-center" data-id="${grp.id}" data-color="#6366f1">Indigo</button>
+                                <button type="button" class="btn-preset-color px-1.5 py-1 rounded border border-teal-200 bg-teal-500 text-white font-medium hover:opacity-90 text-center" data-id="${grp.id}" data-color="#14b8a6">Teal</button>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-1.5 pt-1">
+                            <div>
+                                <div class="flex justify-between items-center mb-0.5">
+                                    <label class="text-[10px] text-slate-500 block">배경색</label>
+                                    <label class="text-[9px] text-slate-400 flex items-center gap-0.5 cursor-pointer">
+                                        <input type="checkbox" class="rounded grp-no-color-chk" data-id="${grp.id}" ${grp.color === 'transparent' ? 'checked' : ''}> 없음
+                                    </label>
+                                </div>
+                                <input type="color" value="${grp.color === 'transparent' ? '#ffffff' : grp.color}" class="w-full h-6 rounded border cursor-pointer grp-color-input" data-id="${grp.id}" ${grp.color === 'transparent' ? 'disabled' : ''}>
+                            </div>
+                            <div>
+                                <label class="text-[10px] text-slate-500 block mb-0.5">사선색</label>
+                                <input type="color" value="${grp.stripeColor || '#000000'}" class="w-full h-6 rounded border cursor-pointer grp-stripe-color-input" data-id="${grp.id}">
+                            </div>
+                            <div>
+                                <label class="text-[10px] text-slate-500 block mb-0.5">패턴</label>
+                                <select class="w-full text-[10px] bg-white border border-slate-200 rounded px-1 py-0.5 grp-pattern-select" data-id="${grp.id}">
+                                    <option value="solid" ${grp.pattern === 'solid' ? 'selected' : ''}>단색</option>
+                                    <option value="stripe-left" ${grp.pattern === 'stripe-left' ? 'selected' : ''}>왼쪽 사선 (/)</option>
+                                    <option value="stripe-right" ${grp.pattern === 'stripe-right' ? 'selected' : ''}>오른쪽 사선 (\)</option>
+                                    <option value="grid" ${grp.pattern === 'grid' ? 'selected' : ''}>격자(+)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="pt-1">
+                            <div class="flex justify-between text-[10px] text-slate-500 mb-0.5">
+                                <span>사선/패턴 간격</span>
+                                <span>${grp.patternGap || 8}px</span>
+                            </div>
+                            <input type="range" min="4" max="24" step="1" value="${grp.patternGap || 8}" class="w-full accent-indigo-600 grp-pattern-gap-input" data-id="${grp.id}">
+                        </div>
+                    </div>
+                    ` : `
+                    <div class="space-y-1.5 pt-1">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] font-medium text-slate-500">수치 색상 모드</span>
+                            <div class="flex items-center gap-2 text-[10px]">
+                                <label class="flex items-center gap-1 cursor-pointer">
+                                    <input type="radio" name="num_color_mode_${grp.id}" value="gradient" class="grp-num-coltype" data-id="${grp.id}" ${grp.numColorMode !== 'fixed' ? 'checked' : ''}> 그라데이션
+                                </label>
+                                <label class="flex items-center gap-1 cursor-pointer">
+                                    <input type="radio" name="num_color_mode_${grp.id}" value="fixed" class="grp-num-coltype" data-id="${grp.id}" ${grp.numColorMode === 'fixed' ? 'checked' : ''}> 단일 색상
+                                </label>
+                            </div>
+                        </div>
+
+                        ${grp.numColorMode === 'fixed' ? `
+                        <div class="grid grid-cols-2 gap-2 pt-1">
+                            <div>
+                                <div class="flex justify-between items-center mb-0.5">
+                                    <label class="text-[10px] text-slate-500 block">목록 색상</label>
+                                    <label class="text-[9px] text-slate-400 flex items-center gap-0.5 cursor-pointer">
+                                        <input type="checkbox" class="rounded grp-no-color-chk" data-id="${grp.id}" ${grp.color === 'transparent' ? 'checked' : ''}> 없음
+                                    </label>
+                                </div>
+                                <input type="color" value="${grp.color === 'transparent' ? '#ffffff' : grp.color}" class="w-full h-6 rounded border cursor-pointer grp-color-input" data-id="${grp.id}" ${grp.color === 'transparent' ? 'disabled' : ''}>
+                            </div>
+                            <div>
+                                <label class="text-[10px] text-slate-500 block mb-0.5">사선/패턴</label>
+                                <select class="w-full text-[10px] bg-white border border-slate-200 rounded px-1 py-0.5 grp-pattern-select" data-id="${grp.id}">
+                                    <option value="solid" ${grp.pattern === 'solid' ? 'selected' : ''}>단색</option>
+                                    <option value="stripe-left" ${grp.pattern === 'stripe-left' ? 'selected' : ''}>왼쪽 사선 (/)</option>
+                                    <option value="stripe-right" ${grp.pattern === 'stripe-right' ? 'selected' : ''}>오른쪽 사선 (\)</option>
+                                    <option value="grid" ${grp.pattern === 'grid' ? 'selected' : ''}>격자(+)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="pt-1">
+                            <div class="flex justify-between text-[10px] text-slate-500 mb-0.5">
+                                <span>사선/패턴 간격</span>
+                                <span>${grp.patternGap || 8}px</span>
+                            </div>
+                            <input type="range" min="4" max="24" step="1" value="${grp.patternGap || 8}" class="w-full accent-indigo-600 grp-pattern-gap-input" data-id="${grp.id}">
+                        </div>
+                        ` : `
+                        <div class="flex justify-between items-center">
+                            <span class="text-[10px] font-medium text-slate-500">수치 범주 설정</span>
+                            <button class="text-[10px] text-indigo-600 hover:underline font-semibold flex items-center gap-0.5 btn-num-auto-calc" data-id="${grp.id}">
+                                <i data-lucide="wand-2" class="w-3 h-3"></i> 자동범위
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="text-[10px] text-slate-500 block mb-0.5">최솟값</label>
+                                <input type="number" value="${grp.minVal ?? 0}" class="w-full text-xs bg-white border border-slate-200 rounded px-2 py-1 grp-num-min" data-id="${grp.id}">
+                            </div>
+                            <div>
+                                <label class="text-[10px] text-slate-500 block mb-0.5">최댓값</label>
+                                <input type="number" value="${grp.maxVal ?? 100}" class="w-full text-xs bg-white border border-slate-200 rounded px-2 py-1 grp-num-max" data-id="${grp.id}">
+                            </div>
+                        </div>
+
+                        <!-- Same Intensity / Tone-Matched Preset Color Schemes -->
+                        <div>
+                            <label class="text-[10px] text-slate-500 block mb-1">동일 톤(진함/연함) 그라데이션 빠른 선택</label>
+                            <div class="grid grid-cols-4 gap-1 text-[10px]">
+                                <button type="button" class="btn-preset-scheme px-1.5 py-1 rounded border border-blue-200 bg-blue-50 text-blue-700 font-medium hover:bg-blue-100 text-center" data-id="${grp.id}" data-min="#eff6ff" data-max="#1d4ed8">Blue 톤</button>
+                                <button type="button" class="btn-preset-scheme px-1.5 py-1 rounded border border-emerald-200 bg-emerald-50 text-emerald-700 font-medium hover:bg-emerald-100 text-center" data-id="${grp.id}" data-min="#ecfdf5" data-max="#047857">Green 톤</button>
+                                <button type="button" class="btn-preset-scheme px-1.5 py-1 rounded border border-rose-200 bg-rose-50 text-rose-700 font-medium hover:bg-rose-100 text-center" data-id="${grp.id}" data-min="#fff1f2" data-max="#be123c">Red 톤</button>
+                                <button type="button" class="btn-preset-scheme px-1.5 py-1 rounded border border-purple-200 bg-purple-50 text-purple-700 font-medium hover:bg-purple-100 text-center" data-id="${grp.id}" data-min="#faf5ff" data-max="#6b21a8">Purple 톤</button>
+                                <button type="button" class="btn-preset-scheme px-1.5 py-1 rounded border border-amber-200 bg-amber-50 text-amber-700 font-medium hover:bg-amber-100 text-center" data-id="${grp.id}" data-min="#fffbeb" data-max="#b45309">Amber 톤</button>
+                                <button type="button" class="btn-preset-scheme px-1.5 py-1 rounded border border-slate-200 bg-slate-100 text-slate-700 font-medium hover:bg-slate-200 text-center" data-id="${grp.id}" data-min="#f8fafc" data-max="#334155">Dark 모노</button>
+                                <button type="button" class="btn-preset-scheme px-1.5 py-1 rounded border border-indigo-200 bg-indigo-50 text-indigo-700 font-medium hover:bg-indigo-100 text-center" data-id="${grp.id}" data-min="#eef2ff" data-max="#4338ca">Indigo 톤</button>
+                                <button type="button" class="btn-preset-scheme px-1.5 py-1 rounded border border-teal-200 bg-teal-50 text-teal-700 font-medium hover:bg-teal-100 text-center" data-id="${grp.id}" data-min="#f0fdfa" data-max="#0f766e">Teal 톤</button>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="text-[10px] text-slate-500 block mb-0.5">최소 색상 (연한 색)</label>
+                                <input type="color" value="${grp.minColor || '#e0f2fe'}" class="w-full h-6 rounded border cursor-pointer grp-num-min-color" data-id="${grp.id}">
+                            </div>
+                            <div>
+                                <label class="text-[10px] text-slate-500 block mb-0.5">최대 색상 (진한 색)</label>
+                                <input type="color" value="${grp.maxColor || '#1d4ed8'}" class="w-full h-6 rounded border cursor-pointer grp-num-max-color" data-id="${grp.id}">
+                            </div>
+                        </div>
+                        `}
+
+                        <!-- Per-group Display Options for Numeric Values -->
+                        <div class="flex items-center justify-between pt-1 border-t border-slate-200/60 text-[11px]">
+                            <label class="flex items-center gap-1 cursor-pointer">
+                                <input type="checkbox" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 grp-show-val-chk" data-id="${grp.id}" ${grp.showValue !== false ? 'checked' : ''}>
+                                <span class="text-slate-700 font-medium">수치 표기</span>
+                            </label>
+                            <label class="flex items-center gap-1 cursor-pointer">
+                                <input type="checkbox" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 grp-pct-chk" data-id="${grp.id}" ${grp.calcPercentage ? 'checked' : ''}>
+                                <span class="text-indigo-700 font-bold">백분율(%)</span>
+                            </label>
+                        </div>
+                    </div>
+                    `}
+
+                    <div>
+                        <textarea rows="4" placeholder="${!isNumeric ? '지명만 입력 (줄바꿈 구분)' : '지명 = 숫자 (예: 信義區 = 85)'}" class="w-full p-2 text-xs font-mono border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-indigo-500 grp-text-input" data-id="${grp.id}">${grp.text}</textarea>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            lucide.createIcons();
+            attachBatchEvents();
+        }
+
+        function attachBatchEvents() {
+            document.querySelectorAll('.grp-active-chk').forEach(el => {
+                el.addEventListener('change', e => {
+                    const g = batchGroups.find(b => b.id == e.target.dataset.id);
+                    if (g) {
+                        g.active = e.target.checked;
+                        renderBatchGroupsUI();
+                        applyAllBatchGroups();
+                    }
+                });
+            });
+
+            document.querySelectorAll('.grp-pattern-gap-input').forEach(el => {
+                el.addEventListener('input', e => {
+                    const g = batchGroups.find(b => b.id == e.target.dataset.id);
+                    if (g) {
+                        g.patternGap = parseInt(e.target.value) || 8;
+                        applyAllBatchGroups();
+                    }
+                });
+            });
+
+            document.querySelectorAll('.grp-name-input').forEach(el => {
+                el.addEventListener('input', e => {
+                    const g = batchGroups.find(b => b.id == e.target.dataset.id);
+                    if (g) g.name = e.target.value;
+                });
+            });
+
+            document.querySelectorAll('.btn-preset-color').forEach(el => {
+                el.addEventListener('click', e => {
+                    const id = e.currentTarget.dataset.id;
+                    const color = e.currentTarget.dataset.color;
+                    const g = batchGroups.find(b => b.id == id);
+                    if (g) {
+                        g.color = color;
+                        renderBatchGroupsUI();
+                        applyAllBatchGroups();
+                    }
+                });
+            });
+
+            document.querySelectorAll('.btn-preset-scheme').forEach(el => {
+                el.addEventListener('click', e => {
+                    const id = e.currentTarget.dataset.id;
+                    const minCol = e.currentTarget.dataset.min;
+                    const maxCol = e.currentTarget.dataset.max;
+                    const g = batchGroups.find(b => b.id == id);
+                    if (g) {
+                        g.minColor = minCol;
+                        g.maxColor = maxCol;
+                        renderBatchGroupsUI();
+                        applyAllBatchGroups();
+                    }
+                });
+            });
+
+            document.querySelectorAll('.grp-no-color-chk').forEach(el => {
+                el.addEventListener('change', e => {
+                    const g = batchGroups.find(b => b.id == e.target.dataset.id);
+                    if (g) {
+                        g.color = e.target.checked ? 'transparent' : '#3b82f6';
+                        renderBatchGroupsUI();
+                        applyAllBatchGroups();
+                    }
+                });
+            });
+
+            document.querySelectorAll('.grp-num-coltype').forEach(el => {
+                el.addEventListener('change', e => {
+                    const g = batchGroups.find(b => b.id == e.target.dataset.id);
+                    if (g) {
+                        g.numColorMode = e.target.value;
+                        renderBatchGroupsUI();
+                        applyAllBatchGroups();
+                    }
+                });
+            });
+
+            document.querySelectorAll('.grp-mode-chk').forEach(el => {
+                el.addEventListener('change', e => {
+                    const g = batchGroups.find(b => b.id == e.target.dataset.id);
+                    if (g) {
+                        g.mode = e.target.checked ? 'numeric' : 'color';
+                        renderBatchGroupsUI();
+                        applyAllBatchGroups();
+                    }
+                });
+            });
+
+            document.querySelectorAll('.grp-color-input').forEach(el => {
+                el.addEventListener('input', e => {
+                    const g = batchGroups.find(b => b.id == e.target.dataset.id);
+                    if (g) {
+                        g.color = e.target.value;
+                        savedColorsSet.add(e.target.value);
+                        renderSavedColorsUI();
+                        applyAllBatchGroups();
+                    }
+                });
+            });
+
+            document.querySelectorAll('.grp-stripe-color-input').forEach(el => {
+                el.addEventListener('input', e => {
+                    const g = batchGroups.find(b => b.id == e.target.dataset.id);
+                    if (g) {
+                        g.stripeColor = e.target.value;
+                        applyAllBatchGroups();
+                    }
+                });
+            });
+
+            document.querySelectorAll('.grp-pattern-select').forEach(el => {
+                el.addEventListener('change', e => {
+                    const g = batchGroups.find(b => b.id == e.target.dataset.id);
+                    if (g) {
+                        g.pattern = e.target.value;
+                        applyAllBatchGroups();
+                    }
+                });
+            });
+
+            document.querySelectorAll('.grp-num-min').forEach(el => {
+                el.addEventListener('input', e => {
+                    const g = batchGroups.find(b => b.id == e.target.dataset.id);
+                    if (g) {
+                        g.minVal = parseFloat(e.target.value) || 0;
+                        applyAllBatchGroups();
+                    }
+                });
+            });
+
+            document.querySelectorAll('.grp-num-max').forEach(el => {
+                el.addEventListener('input', e => {
+                    const g = batchGroups.find(b => b.id == e.target.dataset.id);
+                    if (g) {
+                        g.maxVal = parseFloat(e.target.value) || 100;
+                        applyAllBatchGroups();
+                    }
+                });
+            });
+
+            document.querySelectorAll('.grp-num-min-color').forEach(el => {
+                el.addEventListener('input', e => {
+                    const g = batchGroups.find(b => b.id == e.target.dataset.id);
+                    if (g) {
+                        g.minColor = e.target.value;
+                        applyAllBatchGroups();
+                    }
+                });
+            });
+
+            document.querySelectorAll('.grp-num-max-color').forEach(el => {
+                el.addEventListener('input', e => {
+                    const g = batchGroups.find(b => b.id == e.target.dataset.id);
+                    if (g) {
+                        g.maxColor = e.target.value;
+                        applyAllBatchGroups();
+                    }
+                });
+            });
+
+            document.querySelectorAll('.btn-num-auto-calc').forEach(el => {
+                el.addEventListener('click', e => {
+                    const id = e.currentTarget.dataset.id;
+                    const g = batchGroups.find(b => b.id == id);
+                    if (g && g.text) {
+                        const vals = [];
+                        g.text.split('\n').forEach(l => {
+                            if (l.includes('=')) {
+                                const v = parseFloat(l.split('=')[1]);
+                                if (!isNaN(v)) vals.push(v);
+                            }
+                        });
+                        if (vals.length > 0) {
+                            g.minVal = Math.min(...vals);
+                            g.maxVal = Math.max(...vals);
+                            renderBatchGroupsUI();
+                            applyAllBatchGroups();
+                        }
+                    }
+                });
+            });
+
+            document.querySelectorAll('.grp-show-val-chk').forEach(el => {
+                el.addEventListener('change', e => {
+                    const g = batchGroups.find(b => b.id == e.target.dataset.id);
+                    if (g) {
+                        g.showValue = e.target.checked;
+                        applyAllBatchGroups();
+                    }
+                });
+            });
+
+            document.querySelectorAll('.grp-pct-chk').forEach(el => {
+                el.addEventListener('change', e => {
+                    const g = batchGroups.find(b => b.id == e.target.dataset.id);
+                    if (g) {
+                        g.calcPercentage = e.target.checked;
+                        applyAllBatchGroups();
+                    }
+                });
+            });
+
+            document.querySelectorAll('.grp-text-input').forEach(el => {
+                el.addEventListener('input', e => {
+                    const g = batchGroups.find(b => b.id == e.target.dataset.id);
+                    if (g) {
+                        g.text = e.target.value;
+                        applyAllBatchGroups();
+                    }
+                });
+            });
+
+            document.querySelectorAll('.btn-remove-group').forEach(el => {
+                el.addEventListener('click', e => {
+                    const id = e.currentTarget.dataset.id;
+                    batchGroups = batchGroups.filter(b => b.id != id);
+                    renderBatchGroupsUI();
+                    applyAllBatchGroups();
+                });
+            });
+
+            document.querySelectorAll('.btn-move-up').forEach(el => {
+                el.addEventListener('click', e => {
+                    const id = e.currentTarget.dataset.id;
+                    const idx = batchGroups.findIndex(b => b.id == id);
+                    if (idx > 0) {
+                        const temp = batchGroups[idx];
+                        batchGroups[idx] = batchGroups[idx - 1];
+                        batchGroups[idx - 1] = temp;
+                        renderBatchGroupsUI();
+                        applyAllBatchGroups();
+                    }
+                });
+            });
+
+            document.querySelectorAll('.btn-move-down').forEach(el => {
+                el.addEventListener('click', e => {
+                    const id = e.currentTarget.dataset.id;
+                    const idx = batchGroups.findIndex(b => b.id == id);
+                    if (idx < batchGroups.length - 1) {
+                        const temp = batchGroups[idx];
+                        batchGroups[idx] = batchGroups[idx + 1];
+                        batchGroups[idx + 1] = temp;
+                        renderBatchGroupsUI();
+                        applyAllBatchGroups();
+                    }
+                });
+            });
+        }
+
+        function resetView() {
+            if (svg && zoom) {
+                svg.transition().duration(750).call(
+                    zoom.transform,
+                    d3.zoomIdentity
+                );
+            }
+        }
+
+        function resetColors() {
+            colorMap.clear();
+            numericValuesMap.clear();
+            numericPercentagesMap.clear();
+            numericDisplayConfigMap.clear();
+            batchGroups = [];
+            renderBatchGroupsUI();
+            
+            // Re-apply bulk custom label map so custom names are preserved on reset
+            applyBulkCustomLabelMap();
+
+            if (mapData) renderMap(mapData);
+        }
+
+        function initPaletteUI() {
+            const container = document.getElementById('colorPalette');
+            if (!container) return;
+            container.innerHTML = '';
+
+            PALETTE_COLORS.forEach(color => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'w-7 h-7 rounded border border-slate-300 shadow-sm transition hover:scale-110 focus:outline-none';
+                btn.style.backgroundColor = color;
+                btn.addEventListener('click', () => {
+                    currentFillColor = color;
+                    document.getElementById('customColorPicker').value = color;
+                    savedColorsSet.add(color);
+                    renderSavedColorsUI();
+                    applyColorToSelection();
+                });
+                container.appendChild(btn);
+            });
+        }
+
         function renderSavedColorsUI() {
             const container = document.getElementById('savedColorsPalette');
             if (!container) return;
@@ -399,7 +1996,8 @@
 
             savedColorsSet.forEach(color => {
                 const btn = document.createElement('button');
-                btn.className = 'w-6 h-6 rounded border border-slate-300 hover:scale-110 transition shadow-sm flex items-center justify-center';
+                btn.type = 'button';
+                btn.className = 'w-6 h-6 rounded-full border border-slate-300 shadow-sm transition hover:scale-110 focus:outline-none flex items-center justify-center';
                 btn.style.backgroundColor = color;
                 btn.title = color;
                 btn.addEventListener('click', () => {
@@ -411,988 +2009,277 @@
             });
         }
 
-        // Initialize Preset Color Palette Buttons
-        function initPaletteUI() {
-            const container = document.getElementById('colorPalette');
-            if (!container) return;
-            container.innerHTML = '';
-            PALETTE_COLORS.forEach(color => {
-                const btn = document.createElement('button');
-                btn.className = 'w-8 h-8 rounded-md border border-slate-300 hover:scale-110 transition shadow-sm flex items-center justify-center';
-                btn.style.backgroundColor = color;
-                btn.addEventListener('click', () => {
-                    currentFillColor = color;
-                    saveColor(color);
-                    applyColorToSelection();
+        function createExportableSvgNode() {
+            const container = document.getElementById('mapMain');
+            const originalSvg = container.querySelector('svg');
+            const svgNode = originalSvg.cloneNode(true);
+
+            // Temporarily append cloned node to body to accurately calculate full bounding box including legends and outlying islands
+            svgNode.style.visibility = 'hidden';
+            svgNode.style.position = 'absolute';
+            document.body.appendChild(svgNode);
+
+            const viewportG = svgNode.querySelector('#mapViewport');
+            let bbox = { x: 0, y: 0, width: 800, height: 600 };
+            
+            if (viewportG) {
+                try {
+                    // Reset transform temporarily to measure true spatial bounds of all features & legend
+                    viewportG.removeAttribute('transform');
+                    bbox = viewportG.getBBox();
+                } catch(e) {}
+            }
+
+            document.body.removeChild(svgNode);
+            svgNode.style.visibility = '';
+            svgNode.style.position = '';
+
+            // Generous padding to prevent clipping of labels, outer islands, and legend
+            const paddingX = 40;
+            const paddingY = 40;
+            const exportX = bbox.x - paddingX;
+            const exportY = bbox.y - paddingY;
+            const bboxWidth = bbox.width + (paddingX * 2);
+            const bboxHeight = bbox.height + (paddingY * 2);
+
+            svgNode.setAttribute('viewBox', `${exportX} ${exportY} ${bboxWidth} ${bboxHeight}`);
+            svgNode.setAttribute('width', bboxWidth);
+            svgNode.setAttribute('height', bboxHeight);
+
+            const bgRect = svgNode.querySelector('#mapBackground');
+            if (bgRect) {
+                bgRect.setAttribute('x', exportX - 100);
+                bgRect.setAttribute('y', exportY - 100);
+                bgRect.setAttribute('width', bboxWidth + 200);
+                bgRect.setAttribute('height', bboxHeight + 200);
+                bgRect.setAttribute('fill', document.getElementById('inputBgColor').value || '#e0f2fe');
+            }
+
+            const labelsGroup = svgNode.querySelector('#labelsGroup');
+            if (labelsGroup) {
+                const labelTexts = labelsGroup.querySelectorAll('text');
+                labelTexts.forEach(t => {
+                    t.setAttribute('font-size', `${labelFontSize}px`);
+                    t.setAttribute('stroke-width', `${labelFontSize * 0.25}px`);
                 });
-                container.appendChild(btn);
-            });
+            }
+
+            return { svgNode, width: bboxWidth, height: bboxHeight };
         }
 
-        // Render Multi-list Batch Group Items with Reordering
-        function renderBatchGroupsUI() {
-            const container = document.getElementById('batchListGroupContainer');
-            if (!container) return;
-            container.innerHTML = '';
+        function exportSVG() {
+            const { svgNode } = createExportableSvgNode();
+            const serializer = new XMLSerializer();
+            let svgString = serializer.serializeToString(svgNode);
 
-            batchGroups.forEach((group, index) => {
-                const groupEl = document.createElement('div');
-                groupEl.className = 'p-3 bg-slate-50 border border-slate-200 rounded-lg space-y-2 relative';
-                groupEl.innerHTML = `
-                    <div class="flex items-center justify-between gap-1">
-                        <div class="flex items-center gap-1">
-                            <button data-index="${index}" class="btn-move-up p-1 text-slate-400 hover:text-slate-700 ${index === 0 ? 'opacity-30 cursor-not-allowed' : ''}" title="위로 이동">
-                                <i data-lucide="chevron-up" class="w-3.5 h-3.5"></i>
-                            </button>
-                            <button data-index="${index}" class="btn-move-down p-1 text-slate-400 hover:text-slate-700 ${index === batchGroups.length - 1 ? 'opacity-30 cursor-not-allowed' : ''}" title="아래로 이동">
-                                <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
-                            </button>
-                            <input type="text" value="${group.name}" data-index="${index}" class="batch-group-name text-xs font-bold text-slate-800 bg-white border border-slate-200 rounded px-2 py-0.5 w-28 focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="목록 이름 (범례)">
-                        </div>
-                        ${batchGroups.length > 1 ? `<button data-index="${index}" class="btn-remove-batch text-slate-400 hover:text-red-500 transition p-1"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>` : ''}
-                    </div>
+            if (!svgString.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)) {
+                svgString = svgString.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+            }
 
-                    <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
-                        <div class="flex items-center gap-1">
-                            <label class="text-[10px] text-slate-500">배경:</label>
-                            <input type="color" value="${group.color}" data-index="${index}" class="batch-group-color w-5 h-5 rounded border border-slate-300 cursor-pointer" title="배경 색상">
-                        </div>
-                        <div class="flex items-center gap-1">
-                            <label class="text-[10px] text-slate-500">사선선:</label>
-                            <input type="color" value="${group.stripeColor || '#000000'}" data-index="${index}" class="batch-group-stripe-color w-5 h-5 rounded border border-slate-300 cursor-pointer" title="사선/빗금 색상">
-                        </div>
-                        <select data-index="${index}" class="batch-group-pattern text-[11px] bg-white border border-slate-200 rounded px-1 py-0.5 text-slate-700">
-                            <option value="solid" ${group.pattern === 'solid' ? 'selected' : ''}>단색</option>
-                            <option value="stripe-right" ${group.pattern === 'stripe-right' ? 'selected' : ''}>사선(/)</option>
-                            <option value="stripe-left" ${group.pattern === 'stripe-left' ? 'selected' : ''}>사선(\)</option>
-                            <option value="grid" ${group.pattern === 'grid' ? 'selected' : ''}>격자(+)</option>
-                        </select>
-                    </div>
-
-                    <textarea data-index="${index}" rows="2" placeholder="지명 또는 지명 = 새 이름" class="batch-group-text w-full p-2 text-xs font-mono border border-slate-200 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white">${group.text}</textarea>
-                `;
-                container.appendChild(groupEl);
-            });
-
-            // Event bindings for dynamically created controls
-            container.querySelectorAll('.batch-group-name').forEach(input => {
-                input.addEventListener('input', (e) => {
-                    const idx = parseInt(e.target.dataset.index);
-                    batchGroups[idx].name = e.target.value;
-                });
-            });
-
-            container.querySelectorAll('.batch-group-color').forEach(input => {
-                input.addEventListener('change', (e) => {
-                    const idx = parseInt(e.target.dataset.index);
-                    batchGroups[idx].color = e.target.value;
-                    saveColor(e.target.value);
-                });
-            });
-
-            container.querySelectorAll('.batch-group-stripe-color').forEach(input => {
-                input.addEventListener('change', (e) => {
-                    const idx = parseInt(e.target.dataset.index);
-                    batchGroups[idx].stripeColor = e.target.value;
-                    saveColor(e.target.value);
-                });
-            });
-
-            container.querySelectorAll('.batch-group-pattern').forEach(select => {
-                select.addEventListener('change', (e) => {
-                    const idx = parseInt(e.target.dataset.index);
-                    batchGroups[idx].pattern = e.target.value;
-                });
-            });
-
-            container.querySelectorAll('.batch-group-text').forEach(textarea => {
-                textarea.addEventListener('input', (e) => {
-                    const idx = parseInt(e.target.dataset.index);
-                    batchGroups[idx].text = e.target.value;
-                });
-            });
-
-            container.querySelectorAll('.btn-remove-batch').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const idx = parseInt(e.currentTarget.dataset.index);
-                    batchGroups.splice(idx, 1);
-                    renderBatchGroupsUI();
-                    // Re-evaluate all map fills and labels to clear or re-style regions from deleted list
-                    applyAllBatchGroups();
-                });
-            });
-
-            container.querySelectorAll('.btn-move-up').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const idx = parseInt(e.currentTarget.dataset.index);
-                    if (idx > 0) {
-                        const temp = batchGroups[idx];
-                        batchGroups[idx] = batchGroups[idx - 1];
-                        batchGroups[idx - 1] = temp;
-                        renderBatchGroupsUI();
-                    }
-                });
-            });
-
-            container.querySelectorAll('.btn-move-down').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const idx = parseInt(e.currentTarget.dataset.index);
-                    if (idx < batchGroups.length - 1) {
-                        const temp = batchGroups[idx];
-                        batchGroups[idx] = batchGroups[idx + 1];
-                        batchGroups[idx + 1] = temp;
-                        renderBatchGroupsUI();
-                    }
-                });
-            });
-
-            lucide.createIcons();
+            const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const downloadLink = document.createElement('a');
+            downloadLink.href = url;
+            downloadLink.download = 'taiwan_township_map.svg';
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+            URL.revokeObjectURL(url);
         }
 
-        // Tab Switching Logic
-        function initTabs() {
+        function exportPNG() {
+            const { svgNode, width, height } = createExportableSvgNode();
+            const serializer = new XMLSerializer();
+            let svgString = serializer.serializeToString(svgNode);
+
+            if (!svgString.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)) {
+                svgString = svgString.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+            }
+
+            const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+            const URLObj = window.URL || window.webkitURL || window;
+            const blobURL = URLObj.createObjectURL(svgBlob);
+
+            const image = new Image();
+            image.onload = () => {
+                const scale = 3; // High resolution scale
+                const canvas = document.createElement('canvas');
+                canvas.width = width * scale;
+                canvas.height = height * scale;
+
+                const context = canvas.getContext('2d');
+                context.imageSmoothingEnabled = true;
+                context.imageSmoothingQuality = 'high';
+                context.scale(scale, scale);
+                context.drawImage(image, 0, 0);
+
+                URLObj.revokeObjectURL(blobURL);
+
+                const a = document.createElement('a');
+                a.download = 'taiwan_township_map_hd.png';
+                a.href = canvas.toDataURL('image/png');
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            };
+
+            image.src = blobURL;
+        }
+
+        function updateLabelFontScales() {
+            if (!g) return;
+            g.select('#labelsGroup').selectAll('text')
+                .attr('font-size', `${labelFontSize / currentZoomScale}px`)
+                .attr('stroke-width', `${(labelFontSize * 0.25) / currentZoomScale}px`);
+        }
+
+        function setupEventListeners() {
+            // Tab Switchers
             const tabStyleBtn = document.getElementById('tabStyleBtn');
             const tabBatchBtn = document.getElementById('tabBatchBtn');
             const tabDataBtn = document.getElementById('tabDataBtn');
+
             const tabStyleContent = document.getElementById('tabStyleContent');
             const tabBatchContent = document.getElementById('tabBatchContent');
             const tabDataContent = document.getElementById('tabDataContent');
 
-            const resetTabStyles = () => {
-                [tabStyleBtn, tabBatchBtn, tabDataBtn].forEach(btn => {
-                    btn.className = 'flex-1 py-2.5 text-xs font-semibold text-slate-500 hover:text-slate-700 transition flex items-center justify-center gap-1.5';
+            function switchTab(activeBtn, activeContent) {
+                [tabStyleBtn, tabBatchBtn, tabDataBtn].forEach(b => {
+                    b.classList.remove('text-indigo-600', 'border-b-2', 'border-indigo-600');
+                    b.classList.add('text-slate-500');
                 });
-                [tabStyleContent, tabBatchContent, tabDataContent].forEach(content => content.classList.add('hidden'));
-            };
+                [tabStyleContent, tabBatchContent, tabDataContent].forEach(c => c.classList.add('hidden'));
 
-            tabStyleBtn.addEventListener('click', () => {
-                resetTabStyles();
-                tabStyleBtn.className = 'flex-1 py-2.5 text-xs font-semibold text-indigo-600 border-b-2 border-indigo-600 transition flex items-center justify-center gap-1.5';
-                tabStyleContent.classList.remove('hidden');
-            });
-
-            tabBatchBtn.addEventListener('click', () => {
-                resetTabStyles();
-                tabBatchBtn.className = 'flex-1 py-2.5 text-xs font-semibold text-indigo-600 border-b-2 border-indigo-600 transition flex items-center justify-center gap-1.5';
-                tabBatchContent.classList.remove('hidden');
-            });
-
-            tabDataBtn.addEventListener('click', () => {
-                resetTabStyles();
-                tabDataBtn.className = 'flex-1 py-2.5 text-xs font-semibold text-indigo-600 border-b-2 border-indigo-600 transition flex items-center justify-center gap-1.5';
-                tabDataContent.classList.remove('hidden');
-            });
-        }
-
-        // Helper to Create SVG Pattern with Custom Stripe Line Color & Gap
-        function getOrCreatePattern(targetSvg, bgColor, patternType, stripeColor = '#000000', gap = currentPatternGap) {
-            if (patternType === 'solid' || !patternType) return bgColor;
-
-            const size = Math.max(4, parseInt(gap) || 8);
-            const patternId = `pat-${bgColor.replace('#', '')}-${stripeColor.replace('#', '')}-${patternType}-g${size}`;
-            let defs = targetSvg.select('defs');
-            if (defs.empty()) {
-                defs = targetSvg.append('defs');
+                activeBtn.classList.remove('text-slate-500');
+                activeBtn.classList.add('text-indigo-600', 'border-b-2', 'border-indigo-600');
+                activeContent.classList.remove('hidden');
             }
 
-            if (defs.select(`#${patternId}`).empty()) {
-                const pat = defs.append('pattern')
-                    .attr('id', patternId)
-                    .attr('patternUnits', 'userSpaceOnUse')
-                    .attr('width', size)
-                    .attr('height', size);
+            tabStyleBtn.addEventListener('click', () => switchTab(tabStyleBtn, tabStyleContent));
+            tabBatchBtn.addEventListener('click', () => switchTab(tabBatchBtn, tabBatchContent));
+            tabDataBtn.addEventListener('click', () => switchTab(tabDataBtn, tabDataContent));
 
-                // Background rect
-                pat.append('rect')
-                    .attr('width', size)
-                    .attr('height', size)
-                    .attr('fill', bgColor || '#ffffff');
-
-                const strokeW = Math.max(1, Math.min(3, size / 4));
-
-                // Dynamic Stripe/Grid lines using configured gap spacing
-                if (patternType === 'stripe-right') {
-                    pat.append('path')
-                        .attr('d', `M-${size/4},${size/4} L${size/4},-${size/4} M0,${size} L${size},0 M${size*0.75},${size*1.25} L${size*1.25},${size*0.75}`)
-                        .attr('stroke', stripeColor)
-                        .attr('stroke-width', strokeW);
-                } else if (patternType === 'stripe-left') {
-                    pat.append('path')
-                        .attr('d', `M${size*0.75},-${size/4} L${size*1.25},${size/4} M0,0 L${size},${size} M-${size/4},${size*0.75} L${size/4},${size*1.25}`)
-                        .attr('stroke', stripeColor)
-                        .attr('stroke-width', strokeW);
-                } else if (patternType === 'grid') {
-                    pat.append('path')
-                        .attr('d', `M ${size} 0 L 0 0 0 ${size}`)
-                        .attr('fill', 'none')
-                        .attr('stroke', stripeColor)
-                        .attr('stroke-width', strokeW);
-                }
-            }
-
-            return `url(#${patternId})`;
-        }
-
-        // Create Multi-Color Overlap Stripe Pattern
-        function createMultiColorOverlapPattern(targetSvg, colorsList, gap = currentPatternGap) {
-            const idSeed = colorsList.map(c => c.replace('#', '')).join('-');
-            const bandWidth = Math.max(3, Math.round((parseInt(gap) || 8) / 2));
-            const patternId = `pat-multi-${idSeed}-g${bandWidth}`;
-
-            let defs = targetSvg.select('defs');
-            if (defs.empty()) {
-                defs = targetSvg.append('defs');
-            }
-
-            if (defs.select(`#${patternId}`).empty()) {
-                const totalWidth = bandWidth * colorsList.length;
-
-                const pat = defs.append('pattern')
-                    .attr('id', patternId)
-                    .attr('patternUnits', 'userSpaceOnUse')
-                    .attr('width', totalWidth)
-                    .attr('height', totalWidth)
-                    .attr('patternTransform', 'rotate(45)');
-
-                colorsList.forEach((color, i) => {
-                    pat.append('rect')
-                        .attr('x', i * bandWidth)
-                        .attr('y', 0)
-                        .attr('width', bandWidth)
-                        .attr('height', totalWidth * 2)
-                        .attr('fill', color);
-                });
-            }
-
-            return `url(#${patternId})`;
-        }
-
-        // Helper Getters for Feature Properties
-        function getCountyName(feature) {
-            return feature.properties.COUNTYNAME || feature.properties.COUNTY || feature.properties.county || '';
-        }
-
-        function getTownName(feature) {
-            return feature.properties.TOWNNAME || feature.properties.TOWN || feature.properties.town || '';
-        }
-
-        function getFeatureId(feature) {
-            return feature.properties.TOWNCODE || feature.properties.TOWN_ID || (getCountyName(feature) + getTownName(feature));
-        }
-
-        // D3 Canvas Setup
-        function initD3Map() {
-            const container = document.getElementById('mapMain');
-            const width = container.clientWidth;
-            const height = container.clientHeight;
-
-            svg = d3.select('#svgMap')
-                .attr('width', width)
-                .attr('height', height);
-
-            svg.append('defs');
-
-            // Background rect (Default: Light Blue Ocean #e0f2fe)
-            svg.append('rect')
-                .attr('id', 'mapBackground')
-                .attr('width', width)
-                .attr('height', height)
-                .attr('fill', '#e0f2fe');
-
-            g = svg.append('g').attr('id', 'mapGroup');
-
-            // Projection centered on Taiwan
-            projection = d3.geoMercator()
-                .center([120.95, 23.7])
-                .scale(width < 768 ? 6000 : 9500)
-                .translate([width / 2, height / 2]);
-
-            path = d3.geoPath().projection(projection);
-
-            // Zoom behavior with dynamic font scaling
-            zoom = d3.zoom()
-                .scaleExtent([0.5, 25])
-                .on('zoom', (event) => {
-                    g.attr('transform', event.transform);
-                    currentZoomScale = event.transform.k;
-                    updateLabelFontScales();
-                });
-
-            svg.call(zoom);
-        }
-
-        // Load External TopoJSON Map Data
-        async function loadTaiwanData() {
-            try {
-                const response = await fetch(GEO_DATA_URL);
-                if (!response.ok) throw new Error('Network response failed');
-                const topoData = await response.json();
-
-                // Convert TopoJSON to GeoJSON
-                const objectKey = Object.keys(topoData.objects)[0];
-                const geoFeatures = topojson.feature(topoData, topoData.objects[objectKey]).features;
-
-                mapData = geoFeatures;
-
-                // Render Features
-                renderMap(geoFeatures);
-                populateRegionList(geoFeatures);
-
-                // Apply initial batch list setup if any
+            // Custom Label Realtime Modification
+            document.getElementById('bulkCustomLabelText').addEventListener('input', e => {
+                bulkCustomLabelText = e.target.value;
                 applyAllBatchGroups();
-
-                // Hide Spinner
-                document.getElementById('loadingSpinner').classList.add('hidden');
-            } catch (err) {
-                console.error('Failed to load Taiwan GeoJSON:', err);
-                document.getElementById('loadingSpinner').innerHTML = `
-                    <div class="text-center p-4">
-                        <p class="text-red-500 font-bold text-sm">데이터 불러오기 실패</p>
-                        <p class="text-xs text-slate-500 mt-1">외부 CDN 연결을 확인해 주세요.</p>
-                    </div>
-                `;
-            }
-        }
-
-        // Tooltip Control Functions
-        const tooltipEl = document.getElementById('mapTooltip');
-        const tooltipTitle = document.getElementById('tooltipTitle');
-        const tooltipSub = document.getElementById('tooltipSub');
-
-        function showTooltip(event, feature) {
-            const county = getCountyName(feature);
-            const town = getTownName(feature);
-            const id = getFeatureId(feature);
-            const customLabel = customLabelMap.get(id);
-
-            tooltipTitle.innerText = `${county} ${town}`;
-            tooltipSub.innerText = customLabel ? `맞춤 라벨: ${customLabel}` : `구역 코드: ${id}`;
-
-            tooltipEl.classList.remove('hidden');
-            moveTooltip(event);
-        }
-
-        function moveTooltip(event) {
-            const containerRect = document.getElementById('mapMain').getBoundingClientRect();
-            const x = event.clientX - containerRect.left + 15;
-            const y = event.clientY - containerRect.top + 15;
-
-            tooltipEl.style.left = `${x}px`;
-            tooltipEl.style.top = `${y}px`;
-        }
-
-        function hideTooltip() {
-            tooltipEl.classList.add('hidden');
-        }
-
-        // Render GeoJSON Paths (Default Land: White, Border: Light Grey #cbd5e1)
-        function renderMap(features) {
-            const strokeWidth = document.getElementById('inputStrokeWidth').value;
-            const strokeColor = document.getElementById('inputStrokeColor').value;
-
-            g.selectAll('*').remove(); // Reset existing elements
-
-            g.selectAll('.township-path')
-                .data(features)
-                .enter()
-                .append('path')
-                .attr('class', 'township-path')
-                .attr('d', path)
-                .attr('data-id', d => getFeatureId(d))
-                .attr('fill', d => {
-                    const featureId = getFeatureId(d);
-                    const fillValue = colorMap.get(featureId);
-                    return fillValue || '#ffffff';
-                })
-                .attr('stroke', d => {
-                    const featureId = getFeatureId(d);
-                    return colorMap.has(featureId) ? '#64748b' : strokeColor;
-                })
-                .attr('stroke-width', strokeWidth)
-                .attr('stroke-linejoin', 'round')
-                .on('mouseenter', (event, d) => showTooltip(event, d))
-                .on('mousemove', (event) => moveTooltip(event))
-                .on('mouseleave', () => hideTooltip())
-                .on('click', (event, d) => {
-                    event.stopPropagation();
-                    handleTripleClick(d);
-                });
-
-            // Add Labels group
-            g.append('g').attr('id', 'labelsGroup');
-            if (showLabels) {
-                updateLabels(features);
-            }
-
-            updateLegendOverlay();
-        }
-
-        // Update Text Labels (Only for listed/custom regions)
-        function updateLabels(features) {
-            const labelsGroup = g.select('#labelsGroup');
-            labelsGroup.selectAll('*').remove();
-
-            if (!showLabels) return;
-
-            features.forEach(feature => {
-                const id = getFeatureId(feature);
-
-                // Render labels only if custom label exists or is in colorMap
-                if (!customLabelMap.has(id) && !colorMap.has(id)) return;
-
-                const center = path.centroid(feature);
-                if (isNaN(center[0]) || isNaN(center[1])) return;
-
-                const townName = getTownName(feature);
-                const customLabel = customLabelMap.get(id);
-                const labelText = customLabel || townName;
-
-                const textNode = labelsGroup.append('text')
-                    .attr('class', 'map-label')
-                    .attr('x', center[0])
-                    .attr('y', center[1])
-                    .attr('text-anchor', 'middle')
-                    .attr('dominant-baseline', 'central')
-                    .attr('font-weight', '600')
-                    .attr('fill', '#0f172a')
-                    .attr('stroke', '#ffffff')
-                    .attr('stroke-width', 0.6)
-                    .attr('paint-order', 'stroke fill')
-                    .attr('pointer-events', 'none')
-                    .text(labelText);
             });
 
-            updateLabelFontScales();
-        }
-
-        // Dynamic Font Scaling helper for Zoom & Base font size
-        function updateLabelFontScales() {
-            if (!g) return;
-            const computedSize = Math.max(0.5, labelFontSize / Math.pow(currentZoomScale || 1, 0.7));
-            g.selectAll('.map-label')
-                .attr('font-size', `${computedSize}px`)
-                .attr('stroke-width', Math.max(0.1, computedSize * 0.15));
-        }
-
-        // Render Dynamic SVG Legend Overlay (Positioned Smaller & Lower in Bottom-Left Area)
-        function updateLegendOverlay() {
-            svg.select('#mapLegendOverlay').remove();
-
-            if (batchGroups.length === 0) return;
-
-            const containerHeight = document.getElementById('mapMain').clientHeight || 600;
-            const itemHeight = 15; // Smaller height per item
-            const cardHeight = batchGroups.length * itemHeight + 16;
-            const legendGroup = svg.append('g')
-                .attr('id', 'mapLegendOverlay')
-                .attr('transform', `translate(16, ${containerHeight - cardHeight - 12})`);
-
-            // Background Card (Compact size) - Changed to solid white #ffffff to prevent black background bug in PDF converters
-            legendGroup.append('rect')
-                .attr('width', 135)
-                .attr('height', cardHeight)
-                .attr('rx', 4)
-                .attr('fill', '#ffffff')
-                .attr('stroke', '#cbd5e1')
-                .attr('stroke-width', 0.8);
-
-            // Title
-            legendGroup.append('text')
-                .attr('x', 8)
-                .attr('y', 11)
-                .attr('font-size', '8.5px')
-                .attr('font-weight', 'bold')
-                .attr('fill', '#0f172a')
-                .text('범례');
-
-            // Items
-            batchGroups.forEach((group, idx) => {
-                const y = 20 + (idx * itemHeight);
-                const itemG = legendGroup.append('g').attr('transform', `translate(8, ${y})`);
-
-                const fillStyle = getOrCreatePattern(svg, group.color, group.pattern, group.stripeColor || '#000000');
-
-                itemG.append('rect')
-                    .attr('width', 9)
-                    .attr('height', 9)
-                    .attr('rx', 1.5)
-                    .attr('fill', fillStyle)
-                    .attr('stroke', '#64748b')
-                    .attr('stroke-width', 0.4);
-
-                const displayName = group.name || `목록 ${idx + 1}`;
-                itemG.append('text')
-                    .attr('x', 14)
-                    .attr('y', 7)
-                    .attr('font-size', '8px')
-                    .attr('fill', '#334155')
-                    .attr('font-weight', '500')
-                    .text(displayName.length > 16 ? displayName.substring(0, 15) + '…' : displayName);
-            });
-        }
-
-        // Handle Triple Click Selection / Deselection
-        function handleTripleClick(feature) {
-            const id = getFeatureId(feature);
-
-            if (clickTracker.lastId === id) {
-                clickTracker.count += 1;
-            } else {
-                clickTracker.lastId = id;
-                clickTracker.count = 1;
-            }
-
-            if (clickTracker.timer) clearTimeout(clickTracker.timer);
-
-            clickTracker.timer = setTimeout(() => {
-                clickTracker.count = 0;
-                clickTracker.lastId = null;
-            }, 500);
-
-            // Select on Single Click for UI responsiveness
-            selectRegion(feature);
-
-            // Perform Toggle Action on Triple Click
-            if (clickTracker.count === 3) {
-                if (colorMap.has(id)) {
-                    // Deselect / Reset to Default
-                    colorMap.delete(id);
-                    customLabelMap.delete(id);
-                } else {
-                    // Apply current active styling
-                    const fillValue = getOrCreatePattern(svg, currentFillColor, currentPatternType, currentStripeColor, currentPatternGap);
-                    colorMap.set(id, fillValue);
-                }
-
-                clickTracker.count = 0;
-                clickTracker.lastId = null;
-
-                if (mapData) renderMap(mapData);
-            }
-        }
-
-        // Apply Currently Selected Color & Pattern to Selected Region
-        function applyColorToSelection() {
-            if (!selectedFeature) return;
-            const id = getFeatureId(selectedFeature);
-            const fillValue = getOrCreatePattern(svg, currentFillColor, currentPatternType, currentStripeColor, currentPatternGap);
-            colorMap.set(id, fillValue);
-            if (mapData) renderMap(mapData);
-        }
-
-        // Region Selection Handler
-        function selectRegion(feature) {
-            selectedFeature = feature;
-            const county = getCountyName(feature);
-            const town = getTownName(feature);
-            const id = getFeatureId(feature);
-
-            document.getElementById('selectedRegionName').innerText = `${county} ${town}`;
-            document.getElementById('selectedRegionDetail').innerText = `코드: ${id}`;
-
-            const labelInput = document.getElementById('customLabelInput');
-            labelInput.value = customLabelMap.get(id) || '';
-
-            g.selectAll('.township-path').attr('stroke-width', d => {
-                const isSelected = getFeatureId(d) === id;
-                return isSelected ? 2.5 : document.getElementById('inputStrokeWidth').value;
-            }).attr('stroke', d => {
-                const isSelected = getFeatureId(d) === id;
-                return isSelected ? '#1e293b' : (colorMap.has(getFeatureId(d)) ? '#64748b' : document.getElementById('inputStrokeColor').value);
-            });
-        }
-
-        // Populate Region Search & Explorer Tree
-        function populateRegionList(features) {
-            const container = document.getElementById('regionList');
-            if (!container) return;
-            container.innerHTML = '';
-
-            const countyMap = new Map();
-            features.forEach(f => {
-                const county = getCountyName(f) || '기타';
-                if (!countyMap.has(county)) countyMap.set(county, []);
-                countyMap.get(county).push(f);
-            });
-
-            countyMap.forEach((townships, countyName) => {
-                const countyGroup = document.createElement('div');
-                countyGroup.className = 'border border-slate-200 rounded-md overflow-hidden bg-white mb-1';
-
-                const header = document.createElement('div');
-                header.className = 'px-3 py-1.5 bg-slate-50 font-bold text-xs text-slate-700 flex justify-between items-center cursor-pointer hover:bg-slate-100';
-                header.innerHTML = `<span>${countyName} (${townships.length})</span> <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>`;
-
-                const townContainer = document.createElement('div');
-                townContainer.className = 'p-1.5 space-y-1 hidden bg-white border-t border-slate-100 grid grid-cols-2 gap-1';
-
-                townships.forEach(t => {
-                    const btn = document.createElement('button');
-                    btn.className = 'text-left text-[11px] px-2 py-1 rounded hover:bg-indigo-50 hover:text-indigo-600 transition truncate text-slate-600';
-                    btn.innerText = getTownName(t);
-                    btn.addEventListener('click', () => {
-                        selectRegion(t);
-                        const bounds = path.bounds(t);
-                        const dx = bounds[1][0] - bounds[0][0];
-                        const dy = bounds[1][1] - bounds[0][1];
-                        const x = (bounds[0][0] + bounds[1][0]) / 2;
-                        const y = (bounds[0][1] + bounds[1][1]) / 2;
-                        const scale = Math.max(1, Math.min(15, 0.9 / Math.max(dx / 800, dy / 600)));
-                        const translate = [800 / 2 - scale * x, 600 / 2 - scale * y];
-
-                        svg.transition().duration(750).call(
-                            zoom.transform,
-                            d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale)
-                        );
-                    });
-                    townContainer.appendChild(btn);
-                });
-
-                header.addEventListener('click', () => {
-                    townContainer.classList.toggle('hidden');
-                });
-
-                countyGroup.appendChild(header);
-                countyGroup.appendChild(townContainer);
-                container.appendChild(countyGroup);
-            });
-
-            lucide.createIcons();
-        }
-
-        // Apply All Multi-list Batch Groups (Handles Overlaps with Multi-Stripe Patterns)
-        function applyAllBatchGroups() {
-            if (!mapData) return;
-
-            // Reset maps to clear orphan regions before re-applying active batch groups
-            colorMap.clear();
-            customLabelMap.clear();
-
-            const regionGroupsMap = new Map(); // Map of featureId -> Array of Group configs
-
-            batchGroups.forEach(group => {
-                if (!group.text) return;
-                const lines = group.text.split('\n');
-
-                lines.forEach(line => {
-                    const trimmed = line.trim();
-                    if (!trimmed) return;
-
-                    let searchName = trimmed;
-                    let targetLabel = '';
-
-                    if (trimmed.includes('=')) {
-                        const parts = trimmed.split('=');
-                        searchName = parts[0].trim();
-                        targetLabel = parts[1].trim();
-                    }
-
-                    const matchedFeatures = mapData.filter(f => {
-                        const town = getTownName(f);
-                        const county = getCountyName(f);
-                        const fullName = `${county}${town}`;
-                        return town === searchName || fullName === searchName;
-                    });
-
-                    matchedFeatures.forEach(feature => {
-                        const id = getFeatureId(feature);
-                        if (!regionGroupsMap.has(id)) regionGroupsMap.set(id, []);
-                        regionGroupsMap.get(id).push({
-                            group,
-                            label: targetLabel
-                        });
-                    });
-                });
-            });
-
-            // Process collected region groups
-            regionGroupsMap.forEach((matches, id) => {
-                if (matches.length === 1) {
-                    const { group, label } = matches[0];
-                    const fillValue = getOrCreatePattern(svg, group.color, group.pattern, group.stripeColor || '#000000', currentPatternGap);
-                    colorMap.set(id, fillValue);
-                    if (label) customLabelMap.set(id, label);
-                } else if (matches.length > 1) {
-                    // Generate Multi-Stripe Overlap Pattern for multiple matching lists
-                    const colorsList = matches.map(m => m.group.color);
-                    const fillValue = createMultiColorOverlapPattern(svg, colorsList, currentPatternGap);
-                    colorMap.set(id, fillValue);
-                    
-                    // Deduplicate and combine labels
-                    const rawLabels = matches.map(m => m.label).filter(l => l && l.trim().length > 0);
-                    // Filter out duplicate identical labels
-                    const uniqueLabels = [...new Set(rawLabels)];
-                    if (uniqueLabels.length > 0) {
-                        customLabelMap.set(id, uniqueLabels.join(' / '));
-                    }
+            document.getElementById('customLabelInput').addEventListener('input', e => {
+                if (selectedFeature) {
+                    const id = getFeatureId(selectedFeature);
+                    const val = e.target.value.trim();
+                    if (val) customLabelMap.set(id, val);
+                    else customLabelMap.delete(id);
+                    updateLabels();
                 }
             });
 
-            if (mapData) renderMap(mapData);
-
-            const statusEl = document.getElementById('batchResultStatus');
-            if (statusEl) {
-                statusEl.innerText = `총 ${regionGroupsMap.size}개 행정구역에 목록이 적용되었습니다.`;
-                statusEl.classList.remove('hidden');
-            }
-        }
-
-        // Export Helper to Create Clipless Full Bounds SVG Node (Includes Legend)
-        function createExportableSvgNode() {
-            const cloneSvg = svg.node().cloneNode(true);
-            const cloneD3 = d3.select(cloneSvg);
-
-            // Calculate precise geographic bounding box of map features
-            let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-
-            mapData.forEach(feature => {
-                const b = path.bounds(feature);
-                if (b[0][0] < minX) minX = b[0][0];
-                if (b[0][1] < minY) minY = b[0][1];
-                if (b[1][0] > maxX) maxX = b[1][0];
-                if (b[1][1] > maxY) maxY = b[1][1];
-            });
-
-            // Adjust bounding box to include the overlay title and bottom-left legend if present
-            const padding = 40;
-            const legendOverlay = svg.select('#mapLegendOverlay');
-            if (!legendOverlay.empty()) {
-                const containerHeight = document.getElementById('mapMain').clientHeight || 600;
-                const legendHeight = batchGroups.length * 15 + 16;
-                const legendTop = containerHeight - legendHeight - 12;
-                if (legendTop < minY) minY = Math.min(minY, legendTop - 10);
-            }
-
-            const exportX = minX - padding;
-            const exportY = minY - padding;
-            const bboxWidth = (maxX - minX) + (padding * 2);
-            const bboxHeight = (maxY - minY) + (padding * 2);
-
-            // Expand Ocean Background Rect to cover the full export Bounding Box
-            const cloneBg = cloneD3.select('#mapBackground');
-            if (!cloneBg.empty()) {
-                cloneBg.attr('x', exportX)
-                       .attr('y', exportY)
-                       .attr('width', bboxWidth)
-                       .attr('height', bboxHeight);
-            }
-
-            // Reset transform for export to prevent zoom distortion
-            cloneD3.select('#mapGroup').attr('transform', null);
-
-            // Re-position legend in exported SVG clone relative to the bounding box
-            const cloneLegend = cloneD3.select('#mapLegendOverlay');
-            if (!cloneLegend.empty()) {
-                const legendCardHeight = batchGroups.length * 15 + 16;
-                const exportLegendY = (maxY + padding) - legendCardHeight - 8;
-                cloneLegend.attr('transform', `translate(${minX + 8}, ${exportLegendY})`);
-            }
-
-            // Adjust viewbox to fit whole map and legend without clipping
-            cloneSvg.setAttribute('viewBox', `${exportX} ${exportY} ${bboxWidth} ${bboxHeight}`);
-            cloneSvg.setAttribute('width', bboxWidth);
-            cloneSvg.setAttribute('height', bboxHeight);
-
-            return { cloneSvg, bboxWidth, bboxHeight };
-        }
-
-        // Setup All Event Listeners
-        function setupEventListeners() {
-            // UI Color Controls
-            document.getElementById('customColorPicker').addEventListener('change', (e) => {
+            document.getElementById('customColorPicker').addEventListener('input', e => {
                 currentFillColor = e.target.value;
             });
 
             document.getElementById('btnApplyCustomColor').addEventListener('click', () => {
-                saveColor(currentFillColor);
+                currentFillColor = document.getElementById('customColorPicker').value;
+                savedColorsSet.add(currentFillColor);
+                renderSavedColorsUI();
                 applyColorToSelection();
             });
 
-            document.getElementById('selectPatternType').addEventListener('change', (e) => {
+            document.getElementById('selectPatternType').addEventListener('change', e => {
                 currentPatternType = e.target.value;
-                applyColorToSelection();
-            });
-
-            document.getElementById('inputStripeColor').addEventListener('change', (e) => {
-                currentStripeColor = e.target.value;
-                saveColor(currentStripeColor);
-                applyColorToSelection();
-            });
-
-            document.getElementById('inputPatternGap').addEventListener('input', (e) => {
-                currentPatternGap = parseInt(e.target.value);
-                document.getElementById('valPatternGap').innerText = `${currentPatternGap}px`;
-                if (mapData) renderMap(mapData);
-            });
-
-            document.getElementById('customLabelInput').addEventListener('input', (e) => {
-                if (!selectedFeature) return;
-                const id = getFeatureId(selectedFeature);
-                if (e.target.value.trim()) {
-                    customLabelMap.set(id, e.target.value.trim());
-                } else {
-                    customLabelMap.delete(id);
-                }
-                if (mapData) updateLabels(mapData);
-            });
-
-            // Fill entire county
-            document.getElementById('btnFillCounty').addEventListener('click', () => {
-                if (!selectedFeature || !mapData) return;
-                const countyName = getCountyName(selectedFeature);
-                const fillValue = getOrCreatePattern(svg, currentFillColor, currentPatternType, currentStripeColor, currentPatternGap);
-
-                mapData.forEach(f => {
-                    if (getCountyName(f) === countyName) {
-                        colorMap.set(getFeatureId(f), fillValue);
-                    }
-                });
-
-                renderMap(mapData);
-            });
-
-            // Stroke & Global Appearance Options
-            document.getElementById('inputStrokeWidth').addEventListener('input', (e) => {
-                const val = e.target.value;
-                document.getElementById('valStrokeWidth').innerText = `${val}px`;
-                g.selectAll('.township-path').attr('stroke-width', val);
-            });
-
-            document.getElementById('inputStrokeColor').addEventListener('change', (e) => {
-                if (mapData) renderMap(mapData);
-            });
-
-            document.getElementById('inputBgColor').addEventListener('change', (e) => {
-                svg.select('#mapBackground').attr('fill', e.target.value);
-            });
-
-            document.getElementById('toggleLabels').addEventListener('change', (e) => {
-                showLabels = e.target.checked;
-                if (mapData) updateLabels(mapData);
-            });
-
-            document.getElementById('inputFontSize').addEventListener('input', (e) => {
-                labelFontSize = parseFloat(e.target.value);
-                document.getElementById('valFontSize').innerText = `${labelFontSize}px`;
-                updateLabelFontScales();
-            });
-
-            // Batch List Add/Apply/Clear
-            document.getElementById('btnAddBatchGroup').addEventListener('click', () => {
-                batchGroups.push({
-                    id: Date.now(),
-                    name: `목록 ${batchGroups.length + 1}`,
-                    color: '#10b981',
-                    stripeColor: '#000000',
-                    pattern: 'solid',
-                    text: ''
-                });
-                renderBatchGroupsUI();
-            });
-
-            document.getElementById('btnApplyBatchList').addEventListener('click', () => {
+                // multi 색상 배열 패턴 즉시 반영
                 applyAllBatchGroups();
             });
 
-            document.getElementById('btnClearBatchInput').addEventListener('click', () => {
-                colorMap.clear();
-                customLabelMap.clear();
-                if (mapData) renderMap(mapData);
-                document.getElementById('batchResultStatus').classList.add('hidden');
+            document.getElementById('inputStripeColor').addEventListener('input', e => {
+                currentStripeColor = e.target.value;
+                applyAllBatchGroups();
             });
 
-            // Map Reset Actions
-            document.getElementById('btnResetView').addEventListener('click', () => {
-                svg.transition().duration(750).call(zoom.transform, d3.zoomIdentity);
+            document.getElementById('inputPatternGap').addEventListener('input', e => {
+                currentPatternGap = parseInt(e.target.value);
+                document.getElementById('valPatternGap').textContent = `${currentPatternGap}px`;
+                // 간격 변경 시 multi 색상 패턴 다시 그림
+                applyAllBatchGroups();
             });
 
-            document.getElementById('btnResetColors').addEventListener('click', () => {
-                colorMap.clear();
-                customLabelMap.clear();
-                if (mapData) renderMap(mapData);
+            document.getElementById('btnFillCounty').addEventListener('click', fillCountyWithColor);
+
+            document.getElementById('inputStrokeWidth').addEventListener('input', e => {
+                const val = e.target.value;
+                document.getElementById('valStrokeWidth').textContent = `${val}px`;
+                if (g) g.select('#pathsGroup').selectAll('path').attr('stroke-width', val);
             });
 
-            // Zoom Buttons
-            document.getElementById('btnZoomIn').addEventListener('click', () => {
-                svg.transition().duration(300).call(zoom.scaleBy, 1.3);
+            document.getElementById('inputStrokeColor').addEventListener('input', e => {
+                if (g) g.select('#pathsGroup').selectAll('path').attr('stroke', e.target.value);
             });
 
-            document.getElementById('btnZoomOut').addEventListener('click', () => {
-                svg.transition().duration(300).call(zoom.scaleBy, 0.7);
+            document.getElementById('inputBgColor').addEventListener('input', e => {
+                d3.select('#mapBackground').attr('fill', e.target.value);
             });
 
-            // Search Filter
-            document.getElementById('searchInput').addEventListener('input', (e) => {
-                const term = e.target.value.toLowerCase().trim();
-                const items = document.querySelectorAll('#regionList > div');
+            document.getElementById('selectLabelDisplayMode').addEventListener('change', e => {
+                labelDisplayMode = e.target.value;
+                updateLabels();
+            });
 
-                items.forEach(item => {
-                    const text = item.innerText.toLowerCase();
-                    if (text.includes(term)) {
-                        item.classList.remove('hidden');
-                        if (term.length > 0) {
-                            const sub = item.querySelector('div:nth-child(2)');
-                            if (sub) sub.classList.remove('hidden');
-                        }
+            document.getElementById('inputFontSize').addEventListener('input', e => {
+                labelFontSize = parseFloat(e.target.value);
+                document.getElementById('valFontSize').textContent = `${labelFontSize}px`;
+                updateLabelFontScales();
+            });
+
+            document.getElementById('btnAddBatchGroup').addEventListener('click', () => {
+                const newId = batchGroups.length > 0 ? Math.max(...batchGroups.map(b => b.id)) + 1 : 1;
+                batchGroups.push({
+                    id: newId,
+                    active: true,
+                    name: `목록 #${newId}`,
+                    mode: 'color',
+                    color: '#3b82f6',
+                    stripeColor: '#000000',
+                    pattern: 'solid',
+                    minVal: 0,
+                    maxVal: 100,
+                    minColor: '#e0f2fe',
+                    maxColor: '#1d4ed8',
+                    showValue: true,
+                    calcPercentage: false,
+                    text: ''
+                });
+                renderBatchGroupsUI();
+                applyAllBatchGroups();
+            });
+
+            document.getElementById('btnApplyAllBatchGroups').addEventListener('click', applyAllBatchGroups);
+
+            document.getElementById('searchRegionInput').addEventListener('input', e => {
+                const query = e.target.value.toLowerCase().trim();
+                document.querySelectorAll('.btn-select-town').forEach(btn => {
+                    const txt = btn.textContent.toLowerCase();
+                    if (!query || txt.includes(query)) {
+                        btn.classList.remove('hidden');
                     } else {
-                        item.classList.add('hidden');
+                        btn.classList.add('hidden');
                     }
                 });
             });
 
-            // SVG Download Handler
-            document.getElementById('btnExportSVG').addEventListener('click', () => {
-                const { cloneSvg } = createExportableSvgNode();
-                const serializer = new XMLSerializer();
-                const svgString = serializer.serializeToString(cloneSvg);
-                const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
-                const url = URL.createObjectURL(blob);
+            document.getElementById('btnResetView').addEventListener('click', resetView);
+            document.getElementById('btnResetColors').addEventListener('click', resetColors);
+            document.getElementById('btnExportSVG').addEventListener('click', exportSVG);
+            document.getElementById('btnExportPNG').addEventListener('click', exportPNG);
+        }
 
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = `Taiwan_Township_Map_${Date.now()}.svg`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            });
-
-            // PNG Download Handler
-            document.getElementById('btnExportPNG').addEventListener('click', () => {
-                const { cloneSvg, bboxWidth, bboxHeight } = createExportableSvgNode();
-                const serializer = new XMLSerializer();
-                const svgString = serializer.serializeToString(cloneSvg);
-
-                const img = new Image();
-                const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
-                const url = URL.createObjectURL(svgBlob);
-
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    // Ultra High Resolution (3x scale) for crisp text and line quality
-                    const scaleFactor = 3;
-                    canvas.width = bboxWidth * scaleFactor;
-                    canvas.height = bboxHeight * scaleFactor;
-                    const ctx = canvas.getContext('2d');
-                    ctx.scale(scaleFactor, scaleFactor);
-
-                    // Enable crisp rendering settings
-                    ctx.imageSmoothingEnabled = true;
-                    ctx.imageSmoothingQuality = 'high';
-
-                    ctx.drawImage(img, 0, 0);
-
-                    const pngUrl = canvas.toDataURL('image/png', 1.0);
-                    const link = document.createElement('a');
-                    link.href = pngUrl;
-                    link.download = `Taiwan_Township_Map_HighRes_${Date.now()}.png`;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    URL.revokeObjectURL(url);
-                };
-
-                img.src = url;
-            });
+        window.onload = function () {
+            initD3Map();
+            initPaletteUI();
+            renderSavedColorsUI();
+            renderBatchGroupsUI();
+            setupEventListeners();
+            loadTaiwanData();
         }
     </script>
 </body>
